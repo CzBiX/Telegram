@@ -106,9 +106,8 @@
 #endif
 
 // A wrapper for the tgkill syscall: send a signal to a specific thread.
-static int tgkill(pid_t tgid, pid_t tid, int sig) {
+extern int tgkill(pid_t tgid, pid_t tid, int sig) {
   return syscall(__NR_tgkill, tgid, tid, sig);
-  return 0;
 }
 
 namespace google_breakpad {
