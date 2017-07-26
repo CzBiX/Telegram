@@ -3,8 +3,8 @@
 
 
 <resources>
-    <string name="AppName">Telegram</string>
-    <string name="AppNameBeta">Telegram Beta</string>
+    <string name="AppName">Telegram Mod</string>
+    <string name="AppNameBeta">Telegram Mod Beta</string>
     <string name="LanguageName">English</string>
     <string name="English">English</string>
     <string name="LanguageNameInEnglish">English</string>
@@ -23,7 +23,7 @@
     <string name="SentCallOnly">We are calling your phone <![CDATA[<b>]]>%1$s<![CDATA[</b>]]> to dictate a code.</string>
     <string name="CallText">We will call you in %1$d:%2$02d</string>
     <string name="SmsText">We will send you an SMS in %1$d:%2$02d</string>
-    <string name="Calling">Calling you...</string>
+    <string name="Calling">Calling you…</string>
     <string name="Code">Code</string>
     <string name="WrongNumber">Wrong number?</string>
     <string name="DidNotGetTheCode">Didn\'t get the code?</string>
@@ -101,22 +101,22 @@
     <string name="NewGroup">New Group</string>
     <string name="Yesterday">yesterday</string>
     <string name="NoResult">No results</string>
-    <string name="NoChats">No chats yet...</string>
+    <string name="NoChats">No chats yet…</string>
     <string name="NoChatsHelp">Start messaging by pressing the\nnew message button in the bottom right corner\nor tap the menu button for more options.</string>
-    <string name="WaitingForNetwork">Waiting for network...</string>
-    <string name="Connecting">Connecting...</string>
-    <string name="ConnectingToProxy">Connecting to proxy...</string>
-    <string name="ConnectingToProxyTapToDisable">Tap here to disable proxy...</string>
+    <string name="WaitingForNetwork">Waiting for network…</string>
+    <string name="Connecting">Connecting…</string>
+    <string name="ConnectingToProxy">Connecting to proxy…</string>
+    <string name="ConnectingToProxyTapToDisable">Tap here to disable proxy…</string>
     <string name="ConnectingToProxyDisable">Disable</string>
     <string name="ConnectingToProxyEnable">Enable</string>
     <string name="EnableProxyAlert">Are you sure you want to enable this proxy?</string>
     <string name="EnableProxyAlert2">You can change your proxy server later in the Settings (Data and Storage).</string>
     <string name="ConnectingToProxyDisableAlert">Are you sure you want to disable proxy server %1$s? You can reenable it in the Settings later (Data and Storage).</string>
-    <string name="Updating">Updating...</string>
+    <string name="Updating">Updating…</string>
     <string name="NewSecretChat">New Secret Chat</string>
-    <string name="AwaitingEncryption">Waiting for %s to get online...</string>
+    <string name="AwaitingEncryption">Waiting for %s to get online…</string>
     <string name="EncryptionRejected">Secret chat cancelled</string>
-    <string name="EncryptionProcessing">Exchanging encryption keys...</string>
+    <string name="EncryptionProcessing">Exchanging encryption keys…</string>
     <string name="EncryptedChatStartedOutgoing">%s joined your secret chat.</string>
     <string name="EncryptedChatStartedIncoming">You joined the secret chat.</string>
     <string name="ClearHistory">Clear history</string>
@@ -436,7 +436,7 @@
     <string name="FreeOfTotal">Free %1$s of %2$s</string>
     <string name="UnknownError">Unknown error</string>
     <string name="AccessError">Access error</string>
-    <string name="NoFiles">No files yet...</string>
+    <string name="NoFiles">No files yet…</string>
     <string name="FileUploadLimit">File size shouldn\'t be greater than %1$s</string>
     <string name="NotMounted">Storage not mounted</string>
     <string name="UsbActive">USB transfer active</string>
@@ -448,27 +448,27 @@
     <string name="GalleryInfo">To send images without compression</string>
     <!--chat view-->
     <string name="Invisible">invisible</string>
-    <string name="Typing">typing...</string>
-    <string name="IsTyping">is typing...</string>
-    <string name="AreTyping">are typing...</string>
-    <string name="IsRecordingAudio">%1$s is recording a voice message...</string>
-    <string name="IsRecordingRound">%1$s is recording a video message...</string>
-    <string name="IsSendingAudio">%1$s is sending audio...</string>
-    <string name="IsSendingPhoto">%1$s is sending photo...</string>
+    <string name="Typing">typing…</string>
+    <string name="IsTyping">is typing…</string>
+    <string name="AreTyping">are typing…</string>
+    <string name="IsRecordingAudio">%1$s is recording a voice message…</string>
+    <string name="IsRecordingRound">%1$s is recording a video message…</string>
+    <string name="IsSendingAudio">%1$s is sending audio…</string>
+    <string name="IsSendingPhoto">%1$s is sending photo…</string>
     <string name="InstantView">INSTANT VIEW</string>
     <string name="OpenGroup">OPEN GROUP</string>
     <string name="OpenChannel">OPEN CHANNEL</string>
     <string name="InstantViewNightMode">The dark theme will turn automatically during night time</string>
-    <string name="IsSendingGame">%1$s is playing a game...</string>
-    <string name="IsSendingVideo">%1$s is sending video...</string>
-    <string name="IsSendingFile">%1$s is sending file...</string>
-    <string name="RecordingAudio">recording a voice message...</string>
-    <string name="RecordingRound">recording a video message...</string>
-    <string name="SendingAudio">sending audio...</string>
-    <string name="SendingPhoto">sending photo...</string>
-    <string name="SendingGame">playing a game...</string>
-    <string name="SendingVideoStatus">sending video...</string>
-    <string name="SendingFile">sending file...</string>
+    <string name="IsSendingGame">%1$s is playing a game…</string>
+    <string name="IsSendingVideo">%1$s is sending video…</string>
+    <string name="IsSendingFile">%1$s is sending file…</string>
+    <string name="RecordingAudio">recording a voice message…</string>
+    <string name="RecordingRound">recording a video message…</string>
+    <string name="SendingAudio">sending audio…</string>
+    <string name="SendingPhoto">sending photo…</string>
+    <string name="SendingGame">playing a game…</string>
+    <string name="SendingVideoStatus">sending video…</string>
+    <string name="SendingFile">sending file…</string>
     <string name="GotAQuestion">Got a question\nabout Telegram?</string>
     <string name="ChatTakePhoto">Take photo</string>
     <string name="ChatGallery">Gallery</string>
@@ -476,7 +476,7 @@
     <string name="ChatVideo">Video</string>
     <string name="ChatDocument">File</string>
     <string name="ChatCamera">Camera</string>
-    <string name="NoMessages">No messages here yet...</string>
+    <string name="NoMessages">No messages here yet…</string>
     <string name="ForwardedMessage">Forwarded message</string>
     <string name="From">From</string>
     <string name="NoRecent">No recent</string>
@@ -506,9 +506,9 @@
     <string name="UnsupportedAttachment">Unsupported attachment</string>
     <string name="SetTimer">Set self-destruct timer</string>
     <string name="ServiceNotifications">Service notifications</string>
-    <string name="GettingLinkInfo">Getting Link Info...</string>
-    <string name="OpenInBrowser">OPEN IN...</string>
-    <string name="OpenInExternalApp">Open in...</string>
+    <string name="GettingLinkInfo">Getting Link Info…</string>
+    <string name="OpenInBrowser">OPEN IN…</string>
+    <string name="OpenInExternalApp">Open in…</string>
     <string name="CopyUrl">Copy URL</string>
     <string name="SendItems">Send %1$s</string>
     <string name="SendAsFile">Send as file</string>
@@ -527,8 +527,8 @@
     <string name="NobodyLikesSpam4">You can\'t add this user because you have contacted too many non-contacts today. Please try again tomorrow. You can ask another member to add this user to the group.</string>
     <string name="NobodyLikesSpamUrl">https://telegram.org/faq#can-39t-send-messages-to-non-contacts</string>
     <string name="MoreInfo">More info</string>
-    <string name="ShareSendTo">Send to...</string>
-    <string name="ShareComment">Write a comment...</string>
+    <string name="ShareSendTo">Send to…</string>
+    <string name="ShareComment">Write a comment…</string>
     <string name="TapHereGifs">Tap here to access saved GIFs</string>
     <string name="PinMessage">Pin</string>
     <string name="PinNotify">Notify all members</string>
@@ -678,7 +678,7 @@
     <string name="ALongTimeAgo">last seen a long time ago</string>
     <string name="NewMessageTitle">New Message</string>
     <!--group create view-->
-    <string name="SendMessageTo">Add people...</string>
+    <string name="SendMessageTo">Add people…</string>
     <string name="SoftUserLimitAlert">You will be able to add more users after you finish creating the group and convert it to a supergroup.</string>
     <string name="EnterGroupNamePlaceholder">Enter group name</string>
     <string name="GroupName">Group name</string>
@@ -765,7 +765,7 @@
     <string name="UsernameInvalidStartNumber">Sorry, a username can\'t start with a number.</string>
     <string name="UsernameHelp">You can choose a username on <![CDATA[<b>]]>Telegram<![CDATA[</b>]]>. If you do, other people will be able to find you by this username and contact you without knowing your phone number.\n\nYou can use <![CDATA[<b>]]>a–z<![CDATA[</b>]]>, <![CDATA[<b>]]>0–9<![CDATA[</b>]]> and underscores. Minimum length is <![CDATA[<b>]]>5<![CDATA[</b>]]> characters.</string>
     <string name="UsernameHelpLink">This link opens a chat with you on Telegram:\n%1$s</string>
-    <string name="UsernameChecking">Checking username...</string>
+    <string name="UsernameChecking">Checking username…</string>
     <string name="UsernameAvailable">%1$s is available.</string>
     <string name="UsernameEmpty">None</string>
     <string name="ErrorOccurred">An error occurred.</string>
@@ -978,7 +978,7 @@
     <string name="LocalDatabaseInfo">Clearing the local database will delete the texts of cached messages and compress the database to save internal disk space. Telegram needs some data to work, so database size will not reach zero.\n\nThis operation can take a few minutes to complete.</string>
     <string name="ClearMediaCache">Clear Cache</string>
     <string name="CacheClear">Clear</string>
-    <string name="CalculatingSize">Calculating...</string>
+    <string name="CalculatingSize">Calculating…</string>
     <string name="LocalDocumentCache">Documents</string>
     <string name="LocalPhotoCache">Photos</string>
     <string name="LocalAudioCache">Voice/Video messages</string>
@@ -1099,7 +1099,7 @@
     <string name="ClearButton">Clear</string>
     <string name="PickerPhotos">Photos</string>
     <string name="PickerVideo">Video</string>
-    <string name="AddCaption">Add a caption...</string>
+    <string name="AddCaption">Add a caption…</string>
     <string name="PhotoCaption">Photo Caption</string>
     <string name="VideoCaption">Video Caption</string>
     <string name="GifCaption">GIF Caption</string>
@@ -1216,9 +1216,9 @@
     <string name="NeverShareWith">Never Share With</string>
     <string name="CustomShareSettingsHelp">These settings will override the values above.</string>
     <string name="AlwaysShareWithTitle">Always Share</string>
-    <string name="AlwaysShareWithPlaceholder">Always share with users...</string>
+    <string name="AlwaysShareWithPlaceholder">Always share with users…</string>
     <string name="NeverShareWithTitle">Never Share</string>
-    <string name="NeverShareWithPlaceholder">Never share with users...</string>
+    <string name="NeverShareWithPlaceholder">Never share with users…</string>
     <string name="EmpryUsersPlaceholder">Add Users</string>
     <string name="PrivacyFloodControlError">Sorry, too many requests. Unable to change privacy settings now, please wait.</string>
     <string name="ClearOtherSessionsHelp">Logs out all devices except for this one.</string>
@@ -1228,8 +1228,8 @@
     <string name="WhoCanAddMeInfo">You can restrict who can add you to groups and channels with granular precision.</string>
     <string name="AlwaysAllow">Always Allow</string>
     <string name="NeverAllow">Never Allow</string>
-    <string name="AlwaysAllowPlaceholder">Always allow...</string>
-    <string name="NeverAllowPlaceholder">Never allow...</string>
+    <string name="AlwaysAllowPlaceholder">Always allow…</string>
+    <string name="NeverAllowPlaceholder">Never allow…</string>
     <string name="CustomShareInfo">These users will or will not be able to add you to groups and channels regardless of the settings above.</string>
     <string name="GroupsAndChannelsHelp">Change who can add you to groups and channels.</string>
     <string name="InviteToGroupError">Sorry, you can\'t add this user to groups because of user\'s privacy settings.</string>
@@ -1239,8 +1239,8 @@
     <string name="PrivacyCallsP2PHelp">Disabling peer-to-peer will relay all calls through Telegram servers to avoid revealing your IP address, but may slightly decrease audio quality.</string>
     <!--edit video view-->
     <string name="EditVideo">Edit Video</string>
-    <string name="SendingVideo">Sending video...</string>
-    <string name="SendingGif">Sending GIF...</string>
+    <string name="SendingVideo">Sending video…</string>
+    <string name="SendingGif">Sending GIF…</string>
     <!--bot-->
     <string name="Bot">bot</string>
     <string name="BotShare">Share</string>
@@ -1331,7 +1331,7 @@
     <string name="PhoneNumberFlood">Sorry, you have deleted and re-created your account too many times recently. Please wait for a few days before signing up again.</string>
     <string name="InvalidFirstName">Invalid first name</string>
     <string name="InvalidLastName">Invalid last name</string>
-    <string name="Loading">Loading...</string>
+    <string name="Loading">Loading…</string>
     <string name="NoPlayerInstalled">You don\'t have a video player, please install one to continue</string>
     <string name="NoMailInstalled">Please send an email to sms@stel.com and tell us about your problem.</string>
     <string name="NoHandleAppInstalled">You don\'t have applications that can handle the file type \'%1$s\', please install one to continue</string>
