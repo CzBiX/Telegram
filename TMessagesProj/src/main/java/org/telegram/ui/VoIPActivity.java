@@ -116,13 +116,12 @@ public class VoIPActivity extends Activity implements VoIPService.StateListener,
     private TextAlphaSpan[] ellSpans;
     private AnimatorSet ellAnimator;
     private String lastStateText;
-    private ImageView[] keyEmojiViews=new ImageView[4];
+    private TextView keyEmojiText;
     private boolean keyEmojiVisible;
 	private AnimatorSet emojiAnimator;
     private TextView hintTextView;
     private Animator tooltipAnim;
     private Runnable tooltipHider;
-	private LinearLayout emojiWrap;
     boolean emojiTooltipVisible;
     boolean emojiExpanded;
 	private Bitmap blurredPhoto1, blurredPhoto2;
@@ -604,19 +603,9 @@ public class VoIPActivity extends Activity implements VoIPService.StateListener,
         content.addView(this.cancelBtn=cancelBtn, LayoutHelper.createFrame(78, 78, Gravity.BOTTOM|Gravity.LEFT, 52, 0, 0, 68));
         
 
-		emojiWrap=new LinearLayout(this);
-        emojiWrap.setOrientation(LinearLayout.HORIZONTAL);
-        emojiWrap.setClipToPadding(false);
-        emojiWrap.setPivotX(0);
-        emojiWrap.setPivotY(0);
-		emojiWrap.setPadding(AndroidUtilities.dp(14), AndroidUtilities.dp(10), AndroidUtilities.dp(14), AndroidUtilities.dp(10));
-        for(int i=0;i<4;i++){
-            ImageView emoji=new ImageView(this);
-            emoji.setScaleType(ImageView.ScaleType.FIT_XY);
-            emojiWrap.addView(emoji, LayoutHelper.createLinear(22, 22, i==0 ? 0 : 4, 0, 0, 0));
-            keyEmojiViews[i]=emoji;
-        }
-        emojiWrap.setOnClickListener(new View.OnClickListener(){
+        keyEmojiText = new TextView(this);
+        keyEmojiText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+        keyEmojiText.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
                 if(emojiTooltipVisible){
@@ -629,10 +618,8 @@ public class VoIPActivity extends Activity implements VoIPService.StateListener,
                 setEmojiExpanded(!emojiExpanded);
             }
         });
-        //keyEmojiText=new TextView(this);
-        //keyEmojiText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-        content.addView(emojiWrap, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP|Gravity.RIGHT));
-        emojiWrap.setOnLongClickListener(new View.OnLongClickListener(){
+        content.addView(keyEmojiText, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP|Gravity.RIGHT));
+        keyEmojiText.setOnLongClickListener(new View.OnLongClickListener(){
             @Override
             public boolean onLongClick(View v){
                 if(emojiExpanded)
@@ -790,12 +777,7 @@ public class VoIPActivity extends Activity implements VoIPService.StateListener,
         }catch(Exception checkedExceptionsAreBad){}
         byte[] sha256 = Utilities.computeSHA256(encryptedChat.auth_key, 0, encryptedChat.auth_key.length);
         String[] emoji=EncryptionKeyEmojifier.emojifyForCall(sha256);
-        //keyEmojiText.setText(Emoji.replaceEmoji(TextUtils.join(" ", emoji), keyEmojiText.getPaint().getFontMetricsInt(), AndroidUtilities.dp(32), false));
-        for(int i=0;i<4;i++){
-            Drawable drawable=Emoji.getEmojiDrawable(emoji[i]);
-            drawable.setBounds(0, 0, AndroidUtilities.dp(22), AndroidUtilities.dp(22));
-            keyEmojiViews[i].setImageDrawable(drawable);
-        }
+        keyEmojiText.setText(Emoji.replaceEmoji(TextUtils.join(" ", emoji), keyEmojiText.getPaint().getFontMetricsInt(), AndroidUtilities.dp(22), false));
     }
 
     private CharSequence getFormattedDebugString(){
@@ -1096,7 +1078,7 @@ public class VoIPActivity extends Activity implements VoIPService.StateListener,
                         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
                     }
                     if (state != VoIPService.STATE_ESTABLISHED)
-                        emojiWrap.setVisibility(View.GONE);
+                        keyEmojiText.setVisibility(View.GONE);
                     firstStateChange = false;
                 }
 
@@ -1160,10 +1142,10 @@ public class VoIPActivity extends Activity implements VoIPService.StateListener,
                         setStateTextAnimated("0:00", false);
                         startUpdatingCallDuration();
                         updateKeyView();
-                        if(emojiWrap.getVisibility()!=View.VISIBLE){
-                            emojiWrap.setVisibility(View.VISIBLE);
-                            emojiWrap.setAlpha(0f);
-                            emojiWrap.animate().alpha(1).setDuration(200).setInterpolator(new DecelerateInterpolator()).start();
+                        if(keyEmojiText.getVisibility()!=View.VISIBLE){
+                            keyEmojiText.setVisibility(View.VISIBLE);
+                            keyEmojiText.setAlpha(0f);
+                            keyEmojiText.animate().alpha(1).setDuration(200).setInterpolator(new DecelerateInterpolator()).start();
                         }
                     }
                 } else if (state == VoIPService.STATE_FAILED) {
@@ -1302,11 +1284,6 @@ public class VoIPActivity extends Activity implements VoIPService.StateListener,
 
     @Override
     public void didReceivedNotification(int id, Object... args){
-        if(id==NotificationCenter.emojiDidLoaded){
-            for(ImageView iv:keyEmojiViews){
-                iv.invalidate();
-            }
-        }
         if(id==NotificationCenter.closeInCallActivity){
             finish();
         }
@@ -1338,18 +1315,18 @@ public class VoIPActivity extends Activity implements VoIPService.StateListener,
             emojiAnimator.cancel();
         if(expanded){
             int[] loc={0, 0}, loc2={0, 0};
-            emojiWrap.getLocationInWindow(loc);
+            keyEmojiText.getLocationInWindow(loc);
             emojiExpandedText.getLocationInWindow(loc2);
             Rect rect=new Rect();
             getWindow().getDecorView().getGlobalVisibleRect(rect);
-            int offsetY=loc2[1]-(loc[1]+emojiWrap.getHeight())-AndroidUtilities.dp(32)-emojiWrap.getHeight();
-            int firstOffsetX=(rect.width()/2-Math.round(emojiWrap.getWidth()*2.5f)/2)-loc[0];
+            int offsetY=loc2[1]-(loc[1]+keyEmojiText.getHeight())-AndroidUtilities.dp(32)-keyEmojiText.getHeight();
+            int firstOffsetX=(rect.width()/2-Math.round(keyEmojiText.getWidth()*2.5f)/2)-loc[0];
             AnimatorSet set=new AnimatorSet();
             set.playTogether(
-                    ObjectAnimator.ofFloat(emojiWrap, "translationY", offsetY),
-                    ObjectAnimator.ofFloat(emojiWrap, "translationX", firstOffsetX),
-                    ObjectAnimator.ofFloat(emojiWrap, "scaleX", 2.5f),
-                    ObjectAnimator.ofFloat(emojiWrap, "scaleY", 2.5f),
+                    ObjectAnimator.ofFloat(keyEmojiText, "translationY", offsetY),
+                    ObjectAnimator.ofFloat(keyEmojiText, "translationX", firstOffsetX),
+                    ObjectAnimator.ofFloat(keyEmojiText, "scaleX", 2.5f),
+                    ObjectAnimator.ofFloat(keyEmojiText, "scaleY", 2.5f),
                     ObjectAnimator.ofFloat(blurOverlayView1, "alpha", blurOverlayView1.getAlpha(), 1, 1),
                     ObjectAnimator.ofFloat(blurOverlayView2, "alpha", blurOverlayView2.getAlpha(), blurOverlayView2.getAlpha(), 1),
                     ObjectAnimator.ofFloat(emojiExpandedText, "alpha", 1)
@@ -1367,10 +1344,10 @@ public class VoIPActivity extends Activity implements VoIPService.StateListener,
         }else{
             AnimatorSet set=new AnimatorSet();
             set.playTogether(
-                    ObjectAnimator.ofFloat(emojiWrap, "translationX", 0),
-                    ObjectAnimator.ofFloat(emojiWrap, "translationY", 0),
-					ObjectAnimator.ofFloat(emojiWrap, "scaleX", 1),
-                    ObjectAnimator.ofFloat(emojiWrap, "scaleY", 1),
+                    ObjectAnimator.ofFloat(keyEmojiText, "translationX", 0),
+                    ObjectAnimator.ofFloat(keyEmojiText, "translationY", 0),
+					ObjectAnimator.ofFloat(keyEmojiText, "scaleX", 1),
+                    ObjectAnimator.ofFloat(keyEmojiText, "scaleY", 1),
                     ObjectAnimator.ofFloat(blurOverlayView1, "alpha", blurOverlayView1.getAlpha(), blurOverlayView1.getAlpha(), 0),
                     ObjectAnimator.ofFloat(blurOverlayView2, "alpha", blurOverlayView2.getAlpha(), 0, 0),
                     ObjectAnimator.ofFloat(emojiExpandedText, "alpha", 0)

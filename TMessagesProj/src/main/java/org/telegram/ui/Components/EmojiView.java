@@ -28,6 +28,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.TextPaint;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
@@ -51,13 +52,13 @@ import android.widget.TextView;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.Emoji;
 import org.telegram.messenger.EmojiData;
+import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
+import org.telegram.messenger.R;
 import org.telegram.messenger.Utilities;
 import org.telegram.messenger.query.StickersQuery;
-import org.telegram.messenger.FileLog;
-import org.telegram.messenger.R;
 import org.telegram.messenger.support.widget.GridLayoutManager;
 import org.telegram.messenger.support.widget.RecyclerView;
 import org.telegram.tgnet.TLRPC;
@@ -166,7 +167,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
         return code;
     }
 
-    private class ImageViewEmoji extends ImageView {
+    private class EmojiTextView extends TextView {
 
         private boolean touched;
         private float lastX;
@@ -174,8 +175,12 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
         private float touchedX;
         private float touchedY;
 
-        public ImageViewEmoji(Context context) {
+        public EmojiTextView(Context context) {
             super(context);
+            setTextSize(emojiSize);
+            setGravity(Gravity.CENTER);
+            setTextColor(0xFF000000);
+
             setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -236,7 +241,6 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
                 }
             });
             setBackgroundDrawable(Theme.getSelectorDrawable(false));
-            setScaleType(ImageView.ScaleType.CENTER);
         }
 
         private void sendEmoji(String override) {
@@ -316,7 +320,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
                             } else {
                                 emojiColor.remove(code);
                             }
-                            setImageDrawable(Emoji.getEmojiBigDrawable(code));
+                            setText(Emoji.replaceEmoji(code));
                             sendEmoji(null);
                             saveEmojiColors();
                         } else {
@@ -475,6 +479,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
         private int selection;
         private Paint rectPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         private RectF rect = new RectF();
+        private TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 
         public void setEmoji(String emoji, int arrowPosition) {
             currentEmoji = emoji;
@@ -504,6 +509,9 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
 
             backgroundDrawable = getResources().getDrawable(R.drawable.stickers_back_all);
             arrowDrawable = getResources().getDrawable(R.drawable.stickers_back_arrow);
+
+            textPaint.setTypeface(Emoji.typeface);
+            textPaint.setTextSize(emojiSize * 0.8f);
         }
 
         @Override
@@ -547,11 +555,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
                         }
                         code = addColorToCode(code, color);
                     }
-                    Drawable drawable = Emoji.getEmojiBigDrawable(code);
-                    if (drawable != null) {
-                        drawable.setBounds(x, y, x + emojiSize, y + emojiSize);
-                        drawable.draw(canvas);
-                    }
+                    canvas.drawText(code, x + AndroidUtilities.dpf2(0.5f), y + AndroidUtilities.dpf2(24f), textPaint);
                 }
             }
         }
@@ -2320,9 +2324,9 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
 
         @Override
         public View getView(int position, View view, ViewGroup paramViewGroup) {
-            ImageViewEmoji imageView = (ImageViewEmoji) view;
-            if (imageView == null) {
-                imageView = new ImageViewEmoji(getContext());
+            EmojiTextView textView = (EmojiTextView) view;
+            if (textView == null) {
+                textView = new EmojiTextView(getContext());
             }
             String code;
             String coloredCode;
@@ -2335,9 +2339,9 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
                     coloredCode = addColorToCode(coloredCode, color);
                 }
             }
-            imageView.setImageDrawable(Emoji.getEmojiBigDrawable(coloredCode));
-            imageView.setTag(code);
-            return imageView;
+            textView.setText(Emoji.replaceEmoji(coloredCode));
+            textView.setTag(code);
+            return textView;
         }
 
         @Override

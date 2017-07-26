@@ -20,6 +20,7 @@ import android.widget.ImageView;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ChatObject;
+import org.telegram.messenger.Emoji;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
@@ -177,7 +178,7 @@ public class ChatAvatarContainer extends FrameLayout {
     }
 
     public void setTitle(CharSequence value) {
-        titleTextView.setText(value);
+        titleTextView.setText(Emoji.replaceEmoji(value));
     }
 
     public void setSubtitle(CharSequence value) {

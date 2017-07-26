@@ -8,160 +8,25 @@
 
 package org.telegram.messenger;
 
-import java.io.File;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Locale;
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.ColorFilter;
 import android.graphics.Paint;
-import android.graphics.PixelFormat;
-import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Spannable;
 import android.text.Spanned;
-import android.text.TextPaint;
-import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-public class Emoji {
-    private static HashMap<CharSequence, DrawableInfo> rects = new HashMap<>();
-    private static int drawImgSize;
-    private static int bigImgSize;
-    private static boolean inited = false;
-    private static Paint placeholderPaint;
-    private static final int splitCount = 4;
-    private static Bitmap emojiBmp[][] = new Bitmap[5][splitCount];
-    private static boolean loadingEmoji[][] = new boolean[5][splitCount];
+import org.telegram.ui.Components.TypefaceSpan;
 
-    private static final int[][] cols = {
-            {15, 15, 15, 15},
-            {6, 6, 6, 6},
-            {8, 8, 8, 8},
-            {9, 9, 9, 9},
-            {10, 10, 10, 10}
-    };
+public class Emoji {
+    private static boolean inited = false;
+    public static final Typeface typeface;
 
     static {
-        int emojiFullSize;
-        int add = 2;
-        if (AndroidUtilities.density <= 1.0f) {
-            emojiFullSize = 32;
-            add = 1;
-        } else if (AndroidUtilities.density <= 1.5f) {
-            emojiFullSize = 64;
-        } else if (AndroidUtilities.density <= 2.0f) {
-            emojiFullSize = 64;
-        } else {
-            emojiFullSize = 64;
-        }
-        drawImgSize = AndroidUtilities.dp(20);
-        bigImgSize = AndroidUtilities.dp(AndroidUtilities.isTablet() ? 40 : 32);
-
-        for (int j = 0; j < EmojiData.data.length; j++) {
-            int count2 = (int) Math.ceil(EmojiData.data[j].length / (float) splitCount);
-            int position;
-            for (int i = 0; i < EmojiData.data[j].length; i++) {
-                int page = i / count2;
-                position = i - page * count2;
-                int row = position % cols[j][page];
-                int col = position / cols[j][page];
-                Rect rect = new Rect(row * emojiFullSize + row * add, col * emojiFullSize + col * add, (row + 1) * emojiFullSize + row * add, (col + 1) * emojiFullSize + col * add);
-                rects.put(EmojiData.data[j][i], new DrawableInfo(rect, (byte) j, (byte) page, i));
-            }
-        }
-        placeholderPaint = new Paint();
-        placeholderPaint.setColor(0x00000000);
-    }
-
-    private static void loadEmoji(final int page, final int page2) {
-        try {
-            float scale;
-            int imageResize = 1;
-            if (AndroidUtilities.density <= 1.0f) {
-                scale = 2.0f;
-                imageResize = 2;
-            } else if (AndroidUtilities.density <= 1.5f) {
-                //scale = 3.0f;
-                //imageResize = 2;
-                scale = 2.0f;
-            } else if (AndroidUtilities.density <= 2.0f) {
-                scale = 2.0f;
-            } else {
-                scale = 2.0f;
-            }
-
-            /*String q = "";
-            for (int a = 0; a < EmojiData.data.length; a++) {
-                String arr[] = EmojiData.data[a];
-                for (int b = 0; b < arr.length; b++) {
-                    String emoji = arr[b];
-                    for (int c = 0; c < emoji.length(); c++) {
-                        if (emoji.charAt(c) == '\ufe0f') {
-                            q += String.format("0x%x, ", (int) emoji.charAt(0));
-                            break;
-                        }
-                    }
-                }
-            }
-            FileLog.e(q);*/
-
-            String imageName;
-            File imageFile;
-
-            try {
-                for (int a = 4; a < 7; a++) {
-                    imageName = String.format(Locale.US, "v%d_emoji%.01fx_%d.jpg", a, scale, page);
-                    imageFile = ApplicationLoader.applicationContext.getFileStreamPath(imageName);
-                    if (imageFile.exists()) {
-                        imageFile.delete();
-                    }
-                    imageName = String.format(Locale.US, "v%d_emoji%.01fx_a_%d.jpg", a, scale, page);
-                    imageFile = ApplicationLoader.applicationContext.getFileStreamPath(imageName);
-                    if (imageFile.exists()) {
-                        imageFile.delete();
-                    }
-                }
-                for (int a = 8; a < 11; a++) {
-                    imageName = String.format(Locale.US, "v%d_emoji%.01fx_%d.png", a, scale, page);
-                    imageFile = ApplicationLoader.applicationContext.getFileStreamPath(imageName);
-                    if (imageFile.exists()) {
-                        imageFile.delete();
-                    }
-                }
-            } catch (Exception e) {
-                FileLog.e(e);
-            }
-            Bitmap bitmap = null;
-            try {
-                InputStream is = ApplicationLoader.applicationContext.getAssets().open("emoji/" + String.format(Locale.US, "v11_emoji%.01fx_%d_%d.png", scale, page, page2));
-                BitmapFactory.Options opts = new BitmapFactory.Options();
-                opts.inJustDecodeBounds = false;
-                opts.inSampleSize = imageResize;
-                bitmap = BitmapFactory.decodeStream(is, null, opts);
-                is.close();
-            } catch (Throwable e) {
-                FileLog.e(e);
-            }
-
-            final Bitmap finalBitmap = bitmap;
-            AndroidUtilities.runOnUIThread(new Runnable() {
-                @Override
-                public void run() {
-                    emojiBmp[page][page2] = finalBitmap;
-                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.emojiDidLoaded);
-                }
-            });
-        } catch (Throwable x) {
-            FileLog.e("Error loading emoji", x);
-        }
+        typeface = AndroidUtilities.getTypeface("fonts/NotoColorEmoji.ttf");
     }
 
     public static void invalidateAll(View view) {
@@ -206,117 +71,6 @@ public class Emoji {
         return emoji;
     }
 
-    public static EmojiDrawable getEmojiDrawable(CharSequence code) {
-        DrawableInfo info = rects.get(code);
-        if (info == null) {
-            FileLog.e("No drawable for emoji " + code);
-            return null;
-        }
-        EmojiDrawable ed = new EmojiDrawable(info);
-        ed.setBounds(0, 0, drawImgSize, drawImgSize);
-        return ed;
-    }
-
-    public static Drawable getEmojiBigDrawable(String code) {
-        EmojiDrawable ed = getEmojiDrawable(code);
-        if (ed == null) {
-            return null;
-        }
-        ed.setBounds(0, 0, bigImgSize, bigImgSize);
-        ed.fullSize = true;
-        return ed;
-    }
-
-    public static class EmojiDrawable extends Drawable {
-        private DrawableInfo info;
-        private boolean fullSize = false;
-        private static Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
-        private static Rect rect = new Rect();
-        private static TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-
-        public EmojiDrawable(DrawableInfo i) {
-            info = i;
-        }
-
-        public DrawableInfo getDrawableInfo() {
-            return info;
-        }
-
-        public Rect getDrawRect() {
-            Rect original = getBounds();
-            int cX = original.centerX(), cY = original.centerY();
-            rect.left = cX - (fullSize ? bigImgSize : drawImgSize) / 2;
-            rect.right = cX + (fullSize ? bigImgSize : drawImgSize) / 2;
-            rect.top = cY - (fullSize ? bigImgSize : drawImgSize) / 2;
-            rect.bottom = cY + (fullSize ? bigImgSize : drawImgSize) / 2;
-            return rect;
-        }
-
-        @Override
-        public void draw(Canvas canvas) {
-            /*if (MessagesController.getInstance().useSystemEmoji) {
-                //textPaint.setTextSize(getBounds().width());
-                canvas.drawText(EmojiData.data[info.page][info.emojiIndex], getBounds().left, getBounds().bottom, textPaint);
-                return;
-            }*/
-            if (emojiBmp[info.page][info.page2] == null) {
-                if (loadingEmoji[info.page][info.page2]) {
-                    return;
-                }
-                loadingEmoji[info.page][info.page2] = true;
-                Utilities.globalQueue.postRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        loadEmoji(info.page, info.page2);
-                        loadingEmoji[info.page][info.page2] = false;
-                    }
-                });
-                canvas.drawRect(getBounds(), placeholderPaint);
-                return;
-            }
-
-            Rect b;
-            if (fullSize) {
-                b = getDrawRect();
-            } else {
-                b = getBounds();
-            }
-
-            //if (!canvas.quickReject(b.left, b.top, b.right, b.bottom, Canvas.EdgeType.AA)) {
-                canvas.drawBitmap(emojiBmp[info.page][info.page2], info.rect, b, paint);
-            //}
-        }
-
-        @Override
-        public int getOpacity() {
-            return PixelFormat.TRANSPARENT;
-        }
-
-        @Override
-        public void setAlpha(int alpha) {
-
-        }
-
-        @Override
-        public void setColorFilter(ColorFilter cf) {
-
-        }
-    }
-
-    private static class DrawableInfo {
-        public Rect rect;
-        public byte page;
-        public byte page2;
-        public int emojiIndex;
-
-        public DrawableInfo(Rect r, byte p, byte p2, int index) {
-            rect = r;
-            page = p;
-            page2 = p2;
-            emojiIndex = index;
-        }
-    }
-
     private static boolean inArray(char c, char[] a) {
         for (char cc : a) {
             if (cc == c) {
@@ -324,6 +78,10 @@ public class Emoji {
             }
         }
         return false;
+    }
+
+    public static CharSequence replaceEmoji(CharSequence text) {
+        return replaceEmoji(text, null, 0, false);
     }
 
     public static CharSequence replaceEmoji(CharSequence cs, Paint.FontMetricsInt fontMetrics, int size, boolean createNew) {
@@ -352,8 +110,7 @@ public class Emoji {
         StringBuilder emojiCode = new StringBuilder(16);
         StringBuilder addionalCode = new StringBuilder(2);
         boolean nextIsSkinTone;
-        EmojiDrawable drawable;
-        EmojiSpan span;
+        TypefaceSpan span;
         int length = cs.length();
         boolean doneEmoji = false;
         int nextValidLength;
@@ -449,12 +206,11 @@ public class Emoji {
                     if (emojiOnly != null) {
                         emojiOnly[0]++;
                     }
-                    drawable = Emoji.getEmojiDrawable(emojiCode.subSequence(0, emojiCode.length()));
-                    if (drawable != null) {
-                        span = new EmojiSpan(drawable, DynamicDrawableSpan.ALIGN_BOTTOM, size, fontMetrics);
-                        s.setSpan(span, startIndex, startIndex + startLength, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        emojiCount++;
-                    }
+
+                    span = new TypefaceSpan(typeface, size);
+                    s.setSpan(span, startIndex, startIndex + startLength, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    emojiCount++;
+
                     startLength = 0;
                     startIndex = -1;
                     emojiCode.setLength(0);
@@ -475,7 +231,7 @@ public class Emoji {
         private Paint.FontMetricsInt fontMetrics = null;
         private int size = AndroidUtilities.dp(20);
 
-        public EmojiSpan(EmojiDrawable d, int verticalAlignment, int s, Paint.FontMetricsInt original) {
+        public EmojiSpan(Drawable d, int verticalAlignment, int s, Paint.FontMetricsInt original) {
             super(d, verticalAlignment);
             fontMetrics = original;
             if (original != null) {

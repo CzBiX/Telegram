@@ -730,6 +730,10 @@ public class LocaleController {
     }
 
     public static String getString(String key, int res) {
+        // Force use local App name
+        if (res == R.string.AppName) {
+            return ApplicationLoader.applicationContext.getString(res);
+        }
         return getInstance().getStringInternal(key, res);
     }
 

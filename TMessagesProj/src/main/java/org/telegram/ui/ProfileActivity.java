@@ -53,6 +53,7 @@ import android.widget.TextView;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.ChatObject;
+import org.telegram.messenger.Emoji;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesStorage;
 import org.telegram.messenger.NotificationsController;
@@ -2355,7 +2356,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     }
                 } else {
                     if (!nameTextView[a].getText().equals(newString)) {
-                        nameTextView[a].setText(newString);
+                        nameTextView[a].setText(Emoji.replaceEmoji(newString));
                     }
                 }
                 if (!onlineTextView[a].getText().equals(newString2)) {
@@ -2423,7 +2424,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     continue;
                 }
                 if (chat.title != null && !nameTextView[a].getText().equals(chat.title)) {
-                    nameTextView[a].setText(chat.title);
+                    nameTextView[a].setText(Emoji.replaceEmoji(chat.title));
                 }
                 nameTextView[a].setLeftDrawable(null);
                 if (a != 0) {
