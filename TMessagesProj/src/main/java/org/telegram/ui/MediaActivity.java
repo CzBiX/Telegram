@@ -254,6 +254,7 @@ public class MediaActivity extends BaseFragment implements NotificationCenter.No
     private final static int music_item = 6;
     private final static int forward = 3;
     private final static int delete = 4;
+    private final static int jump_back = 7;
 
     public MediaActivity(Bundle args) {
         super(args);
@@ -515,6 +516,24 @@ public class MediaActivity extends BaseFragment implements NotificationCenter.No
                         }
                     });
                     presentFragment(fragment);
+                } else if (id == jump_back) {
+                    Bundle args = new Bundle();
+                    int lower_id = (int) dialog_id;
+                    if (lower_id > 0) {
+                        args.putInt("user_id", lower_id);
+                    } else if (lower_id < 0) {
+                        args.putInt("chat_id", -lower_id);
+                    } else {
+                        args.putInt("enc_id", (int) (dialog_id >> 32));
+                    }
+
+                    args.putInt("message_id", selectedFiles[0].keySet().iterator().next());
+
+                    if (!MessagesController.checkCanOpenChat(args, MediaActivity.this)) {
+                        return;
+                    }
+
+                    presentFragment(new ChatActivity(args));
                 }
             }
         });
@@ -629,6 +648,7 @@ public class MediaActivity extends BaseFragment implements NotificationCenter.No
         if ((int) dialog_id != 0) {
             actionModeViews.add(actionMode.addItemWithWidth(forward, R.drawable.ic_ab_forward, AndroidUtilities.dp(54)));
         }
+        actionModeViews.add(actionMode.addItemWithWidth(jump_back, R.drawable.ic_call_made_green_18dp, AndroidUtilities.dp(54)));
         actionModeViews.add(actionMode.addItemWithWidth(delete, R.drawable.ic_ab_delete, AndroidUtilities.dp(54)));
 
         photoVideoAdapter = new SharedPhotoVideoAdapter(context);
@@ -1090,6 +1110,7 @@ public class MediaActivity extends BaseFragment implements NotificationCenter.No
             cantDeleteMessagesCount++;
         }
         actionBar.createActionMode().getItem(delete).setVisibility(cantDeleteMessagesCount == 0 ? View.VISIBLE : View.GONE);
+        actionBar.createActionMode().getItem(jump_back).setVisibility(View.VISIBLE);
         selectedMessagesCountTextView.setNumber(1, false);
         AnimatorSet animatorSet = new AnimatorSet();
         ArrayList<Animator> animators = new ArrayList<>();
@@ -1133,12 +1154,15 @@ public class MediaActivity extends BaseFragment implements NotificationCenter.No
                     cantDeleteMessagesCount++;
                 }
             }
-            if (selectedFiles[0].isEmpty() && selectedFiles[1].isEmpty()) {
+
+            final int selectedFilesCount = selectedFiles[0].size() + selectedFiles[1].size();
+            if (selectedFilesCount == 0) {
                 actionBar.hideActionMode();
             } else {
-                selectedMessagesCountTextView.setNumber(selectedFiles[0].size() + selectedFiles[1].size(), true);
+                selectedMessagesCountTextView.setNumber(selectedFilesCount, true);
             }
             actionBar.createActionMode().getItem(delete).setVisibility(cantDeleteMessagesCount == 0 ? View.VISIBLE : View.GONE);
+            actionBar.createActionMode().getItem(jump_back).setVisibility(selectedFilesCount <= 1 ? View.VISIBLE : View.GONE);
             scrolling = false;
             if (view instanceof SharedDocumentCell) {
                 ((SharedDocumentCell) view).setChecked(selectedFiles[loadIndex].containsKey(message.getId()), true);
