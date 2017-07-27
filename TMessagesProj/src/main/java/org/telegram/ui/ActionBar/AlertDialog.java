@@ -160,7 +160,7 @@ public class AlertDialog extends Dialog implements Drawable.Callback {
         super(context, R.style.TransparentDialog);
 
         backgroundPaddings = new Rect();
-        shadowDrawable = context.getResources().getDrawable(R.drawable.popup_fixed_alert).mutate();
+        shadowDrawable = context.getResources().getDrawable(R.drawable.popup_fixed).mutate();
         shadowDrawable.setColorFilter(new PorterDuffColorFilter(getThemeColor(Theme.key_dialogBackground), PorterDuff.Mode.MULTIPLY));
         shadowDrawable.getPadding(backgroundPaddings);
 
