@@ -3240,6 +3240,18 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         showDialog(builder.create());
                         return true;
                     }
+                    } else if (object instanceof TLRPC.User) {
+                        TLRPC.User user = (TLRPC.User) object;
+                        int start = mentionsAdapter.getResultStartPosition();
+                        int len = mentionsAdapter.getResultLength();
+
+                        String name = user.first_name;
+                        if (name == null || name.length() == 0) {
+                            name = user.last_name;
+                        }
+                        Spannable spannable = new SpannableString(name + " ");
+                        spannable.setSpan(new URLSpanUserMention("" + user.id, 1), 0, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        chatActivityEnterView.replaceWithText(start, len, spannable, true);
                 }
                 return false;
             });
