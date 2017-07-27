@@ -734,6 +734,7 @@ public class ChatActivityEnterView extends FrameLayout implements NotificationCe
         textFieldContainer.addView(frameLayout, LayoutHelper.createLinear(0, LayoutHelper.WRAP_CONTENT, 1.0f));
 
         emojiButton = new ImageView(context) {
+            /*
             @Override
             protected void onDraw(Canvas canvas) {
                 super.onDraw(canvas);
@@ -743,6 +744,7 @@ public class ChatActivityEnterView extends FrameLayout implements NotificationCe
                     canvas.drawCircle(x, y, AndroidUtilities.dp(5), dotPaint);
                 }
             }
+            */
         };
         emojiButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_chat_messagePanelIcons), PorterDuff.Mode.MULTIPLY));
         emojiButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
