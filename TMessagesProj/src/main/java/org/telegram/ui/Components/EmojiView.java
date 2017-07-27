@@ -177,7 +177,8 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
 
         public EmojiTextView(Context context) {
             super(context);
-            setTextSize(emojiSize);
+            final int size = AndroidUtilities.isTablet() ? 40 : 32;
+            setTextSize(size * 0.8f);
             setGravity(Gravity.CENTER);
             setTextColor(0xFF000000);
 
