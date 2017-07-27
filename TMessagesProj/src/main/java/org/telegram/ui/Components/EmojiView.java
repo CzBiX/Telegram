@@ -1689,6 +1689,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
 
         ArrayList<Long> unread = DataQuery.getInstance(currentAccount).getUnreadStickerSets();
 
+        /*
         if (trendingGridAdapter != null && trendingGridAdapter.getItemCount() != 0 && !unread.isEmpty()) {
             drawable = getContext().getResources().getDrawable(R.drawable.ic_smiles_trend);
             Theme.setDrawableColorByKey(drawable, Theme.key_chat_emojiPanelIcon);
@@ -1697,6 +1698,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
             stickersTabOffset++;
             stickersCounter.setText(String.format("%d", unread.size()));
         }
+        */
 
         if (!favouriteStickers.isEmpty()) {
             favTabBum = stickersTabOffset;
@@ -2897,11 +2899,13 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
 
         @Override
         public void customOnDraw(Canvas canvas, int position) {
+            /*
             if (position == 6 && !DataQuery.getInstance(currentAccount).getUnreadStickerSets().isEmpty() && dotPaint != null) {
                 int x = canvas.getWidth() / 2 + AndroidUtilities.dp(4 + 5);
                 int y = canvas.getHeight() / 2 - AndroidUtilities.dp(13 - 5);
                 canvas.drawCircle(x, y, AndroidUtilities.dp(5), dotPaint);
             }
+            */
         }
 
         public Object instantiateItem(ViewGroup viewGroup, int position) {
