@@ -27,16 +27,16 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.UserObject;
 import org.telegram.messenger.FileLog;
+import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
+import org.telegram.messenger.UserObject;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.LayoutHelper;
-import org.telegram.ui.ActionBar.Theme;
 
 public class DrawerProfileCell extends FrameLayout {
 
@@ -184,7 +184,13 @@ public class DrawerProfileCell extends FrameLayout {
             photo = user.photo.photo_small;
         }
         nameTextView.setText(UserObject.getUserName(user));
-        phoneTextView.setText(PhoneFormat.getInstance().format("+" + user.phone));
+        final String username;
+        if (user.username != null && user.username.length() > 0) {
+            username = '@' + user.username;
+        } else {
+            username = LocaleController.getString("UsernameEmpty", R.string.UsernameEmpty);
+        }
+        phoneTextView.setText(username);
         AvatarDrawable avatarDrawable = new AvatarDrawable(user);
         avatarDrawable.setColor(Theme.getColor(Theme.key_avatar_backgroundInProfileBlue));
         avatarImageView.setImage(photo, "50_50", avatarDrawable);
