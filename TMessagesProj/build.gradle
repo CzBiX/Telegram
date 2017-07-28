@@ -132,6 +132,7 @@ android {
             }
             minSdkVersion 23
             versionCode = 3
+            multiDexEnabled true
         }
         fat {
             sourceSets.debug {

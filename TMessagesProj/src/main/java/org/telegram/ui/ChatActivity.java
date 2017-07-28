@@ -99,6 +99,7 @@ import org.telegram.messenger.support.widget.LinearSmoothScrollerMiddle;
 import org.telegram.messenger.support.widget.RecyclerView;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLoader;
+import org.telegram.messenger.support.widget.helper.ItemTouchHelper;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.RequestDelegate;
 import org.telegram.tgnet.TLObject;
@@ -555,6 +556,44 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 return;
             }
             createMenu(view, true);
+        }
+    };
+
+    private ItemTouchHelper itemTouchHelper;
+    private ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.START) {
+        @Override
+        public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+            if (viewHolder.itemView instanceof ChatMessageCell) {
+                if ((currentEncryptedChat == null || AndroidUtilities.getPeerLayerVersion(currentEncryptedChat.layer) >= 46) &&
+                        !isBroadcast &&
+                        (currentChat == null || (!ChatObject.isNotInChat(currentChat) && (!ChatObject.isChannel(currentChat) || ChatObject.canPost(currentChat) || currentChat.megagroup) && ChatObject.canSendMessages(currentChat)))) {
+                    chatListView.cancelClickRunnables(true);
+                    return super.getSwipeDirs(recyclerView, viewHolder);
+                }
+            }
+            return 0;
+        }
+
+        @Override
+        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+            itemTouchHelper.attachToRecyclerView(null);
+            itemTouchHelper.attachToRecyclerView(chatListView);
+
+            final MessageObject messageObject = ((ChatMessageCell) viewHolder.itemView).getMessageObject();
+            final int msgType = getMessageType(messageObject);
+
+            if (msgType == 1) {
+                if (currentChat != null && !isBroadcast) {
+                    showReplyPanel(true, messageObject, null, null, false);
+                }
+            } else if (msgType != 0 && msgType != 20) {
+                showReplyPanel(true, messageObject, null, null, false);
+            }
         }
     };
 
@@ -1741,6 +1780,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             chatLayoutManager.scrollToPositionWithOffset(scrollToPositionOnRecreate, scrollToOffsetOnRecreate);
             scrollToPositionOnRecreate = -1;
         }
+
+        itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(chatListView);
 
         progressView = new FrameLayout(context);
         progressView.setVisibility(View.INVISIBLE);
