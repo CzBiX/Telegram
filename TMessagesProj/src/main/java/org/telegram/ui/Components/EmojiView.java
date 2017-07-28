@@ -1427,6 +1427,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
         ArrayList<Long> unread = StickersQuery.getUnreadStickerSets();
 
         TextView stickersCounter;
+        /*
         if (trendingGridAdapter != null && trendingGridAdapter.getItemCount() != 0 && !unread.isEmpty()) {
             drawable = getContext().getResources().getDrawable(R.drawable.ic_smiles_trend);
             Theme.setDrawableColorByKey(drawable, Theme.key_chat_emojiPanelIcon);
@@ -1435,6 +1436,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
             stickersTabOffset++;
             stickersCounter.setText(String.format("%d", unread.size()));
         }
+        */
 
         if (!recentStickers.isEmpty()) {
             recentTabBum = stickersTabOffset;
@@ -1456,12 +1458,14 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
         for (int a = 0; a < stickerSets.size(); a++) {
             stickersTab.addStickerTab(stickerSets.get(a).documents.get(0));
         }
+        /*
         if (trendingGridAdapter != null && trendingGridAdapter.getItemCount() != 0 && unread.isEmpty()) {
             drawable = getContext().getResources().getDrawable(R.drawable.ic_smiles_trend);
             Theme.setDrawableColorByKey(drawable, Theme.key_chat_emojiPanelIcon);
             trendingTabNum = stickersTabOffset + stickerSets.size();
             stickersTab.addIconTab(drawable);
         }
+        */
         drawable = getContext().getResources().getDrawable(R.drawable.ic_smiles_settings);
         Theme.setDrawableColorByKey(drawable, Theme.key_chat_emojiPanelIcon);
         stickersTab.addIconTab(drawable);
