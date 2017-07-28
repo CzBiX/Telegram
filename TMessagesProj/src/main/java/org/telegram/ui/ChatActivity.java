@@ -10176,6 +10176,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         if (!selectedObject.isSecretPhoto() && !selectedObject.isLiveLocation()) {
                             items.add(LocaleController.getString("Forward", R.string.Forward));
                             options.add(2);
+                            items.add(LocaleController.getString("SaveToCloud", R.string.ActionSaveToCloud));
+                            options.add(90);
                         }
                         if (allowUnpin) {
                             items.add(LocaleController.getString("UnpinMessage", R.string.UnpinMessage));
@@ -10733,6 +10735,13 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         });
                     }
                 });
+                break;
+            }
+            case 90: {
+                final ArrayList<MessageObject> list = new ArrayList<>(1);
+                list.add(selectedObject);
+                SendMessagesHelper.getInstance().sendMessage(list, UserConfig.getClientUserId());
+                Toast.makeText(getParentActivity(), R.string.ToastSaved, Toast.LENGTH_SHORT).show();
                 break;
             }
         }
