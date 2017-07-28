@@ -105,6 +105,7 @@ import org.telegram.messenger.support.widget.LinearSmoothScrollerMiddle;
 import org.telegram.messenger.support.widget.RecyclerView;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLoader;
+import org.telegram.messenger.support.widget.helper.ItemTouchHelper;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.RequestDelegate;
 import org.telegram.tgnet.TLObject;
@@ -598,6 +599,63 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 return;
             }
             createMenu(view, true, false);
+        }
+    };
+
+    private ItemTouchHelper itemTouchHelper;
+    private ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, 0) {
+        @Override
+        public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+            if (viewHolder.itemView instanceof ChatMessageCell) {
+                final MessageObject message = ((ChatMessageCell) viewHolder.itemView).getMessageObject();
+                final int type = getMessageType(message);
+
+                if (type < 0) {
+                    return 0;
+                }
+
+                int flags = 0;
+                if (!(currentEncryptedChat != null && AndroidUtilities.getPeerLayerVersion(currentEncryptedChat.layer) < 46 ||
+                        type == 1 && (message.getDialogId() == mergeDialogId || message.isSecretPhoto()) ||
+                        currentEncryptedChat == null && message.getId() < 0 ||
+                        isBroadcast ||
+                        currentChat != null && (ChatObject.isNotInChat(currentChat) || ChatObject.isChannel(currentChat) && !ChatObject.canPost(currentChat) && !currentChat.megagroup || !ChatObject.canSendMessages(currentChat)))) {
+                    if (type == 1 || type != 20 || currentEncryptedChat != null) {
+                        flags |= ItemTouchHelper.START;
+                    }
+                }
+
+                /*
+                if (message.canEditMessage(currentChat) && !chatActivityEnterView.hasAudioToSend() && message.getDialogId() != mergeDialogId) {
+                    if ((type == 1 && currentChat != null && !isBroadcast) || currentEncryptedChat == null) {
+                        flags |= ItemTouchHelper.END;
+                    }
+                }
+                */
+
+                return flags;
+            }
+            return 0;
+        }
+
+        @Override
+        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+            itemTouchHelper.attachToRecyclerView(null);
+            itemTouchHelper.attachToRecyclerView(chatListView);
+
+            final MessageObject messageObject = ((ChatMessageCell) viewHolder.itemView).getMessageObject();
+
+            selectedObject = messageObject;
+            if (direction == ItemTouchHelper.START) {
+                processSelectedOption(8);
+            } else if (direction == ItemTouchHelper.END) {
+                processSelectedOption(12);
+            }
         }
     };
 
@@ -2184,6 +2242,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             chatLayoutManager.scrollToPositionWithOffset(scrollToPositionOnRecreate, scrollToOffsetOnRecreate);
             scrollToPositionOnRecreate = -1;
         }
+
+        itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(chatListView);
 
         progressView = new FrameLayout(context);
         progressView.setVisibility(View.INVISIBLE);
