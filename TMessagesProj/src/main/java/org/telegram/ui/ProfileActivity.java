@@ -2356,7 +2356,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     }
                 } else {
                     if (!nameTextView[a].getText().equals(newString)) {
-                        nameTextView[a].setText(Emoji.replaceEmoji(newString));
+                        Emoji.setEmojiText(nameTextView[a], newString);
                     }
                 }
                 if (!onlineTextView[a].getText().equals(newString2)) {
@@ -2424,7 +2424,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     continue;
                 }
                 if (chat.title != null && !nameTextView[a].getText().equals(chat.title)) {
-                    nameTextView[a].setText(Emoji.replaceEmoji(chat.title));
+                    Emoji.setEmojiText(nameTextView[a], chat.title);
                 }
                 nameTextView[a].setLeftDrawable(null);
                 if (a != 0) {

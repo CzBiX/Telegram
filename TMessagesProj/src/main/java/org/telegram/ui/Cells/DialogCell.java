@@ -639,7 +639,7 @@ public class DialogCell extends BaseCell {
         nameWidth = Math.max(AndroidUtilities.dp(12), nameWidth);
         try {
             CharSequence nameStringFinal = TextUtils.ellipsize(nameString.replace('\n', ' '), currentNamePaint, nameWidth - AndroidUtilities.dp(12), TextUtils.TruncateAt.END);
-            nameLayout = new StaticLayout(Emoji.replaceEmoji(nameStringFinal), currentNamePaint, nameWidth, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
+            nameLayout = new StaticLayout(Emoji.replaceEmoji(nameStringFinal, (int) currentNamePaint.getTextSize()), currentNamePaint, nameWidth, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
         } catch (Exception e) {
             FileLog.e(e);
         }

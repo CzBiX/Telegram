@@ -178,7 +178,7 @@ public class ChatAvatarContainer extends FrameLayout {
     }
 
     public void setTitle(CharSequence value) {
-        titleTextView.setText(Emoji.replaceEmoji(value));
+        Emoji.setEmojiText(titleTextView, value);
     }
 
     public void setSubtitle(CharSequence value) {

@@ -179,6 +179,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
             super(context);
             final int size = AndroidUtilities.isTablet() ? 40 : 32;
             setTextSize(size * 0.8f);
+            setTypeface(Emoji.typeface);
             setGravity(Gravity.CENTER);
             setTextColor(0xFF000000);
 
@@ -321,7 +322,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
                             } else {
                                 emojiColor.remove(code);
                             }
-                            setText(Emoji.replaceEmoji(code));
+                            setText(code);
                             sendEmoji(null);
                             saveEmojiColors();
                         } else {
@@ -556,7 +557,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
                         }
                         code = addColorToCode(code, color);
                     }
-                    canvas.drawText(code, x + AndroidUtilities.dpf2(0.5f), y + AndroidUtilities.dpf2(24f), textPaint);
+                    canvas.drawText(code, x + AndroidUtilities.dpf2(0.4f), y + AndroidUtilities.dpf2(24f), textPaint);
                 }
             }
         }
@@ -2344,7 +2345,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
                     coloredCode = addColorToCode(coloredCode, color);
                 }
             }
-            textView.setText(Emoji.replaceEmoji(coloredCode));
+            textView.setText(coloredCode);
             textView.setTag(code);
             return textView;
         }
