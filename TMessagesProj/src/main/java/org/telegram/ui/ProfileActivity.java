@@ -2412,12 +2412,15 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         }
                     }
                 } else {
+                    /*
                     if (currentChat.megagroup && info.participants_count <= 200) {
+                    */
                         if (onlineCount > 1 && info.participants_count != 0) {
                             newString = String.format("%s, %s", LocaleController.formatPluralString("Members", info.participants_count), LocaleController.formatPluralString("OnlineCount", onlineCount));
                         } else {
                             newString = LocaleController.formatPluralString("Members", info.participants_count);
                         }
+                        /*
                     } else {
                         int result[] = new int[1];
                         String shortNumber = LocaleController.formatShortNumber(info.participants_count, result);
@@ -2427,6 +2430,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             newString = LocaleController.formatPluralString("Subscribers", result[0]).replace(String.format("%d", result[0]), shortNumber);
                         }
                     }
+                    */
                 }
             } else {
                 int count = chat.participants_count;
