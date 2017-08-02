@@ -8003,7 +8003,27 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         return false;
     }
 
+    public static ArrayList<MessageObject> filterBlockedMessages(ArrayList<MessageObject> messages) {
+        final ArrayList<Integer> blockedUsers = MessagesController.getInstance().blockedUsers;
+
+        final ArrayList<MessageObject> filtered = new ArrayList<>();
+        for (MessageObject message : messages) {
+            if (message.isFromUser() && blockedUsers.contains(message.messageOwner.from_id)) {
+                continue;
+            }
+
+            filtered.add(message);
+        }
+
+        if (filtered.size() != messages.size()) {
+            return filtered;
+        }
+
+        return messages;
+    }
+
     protected void updateInterfaceWithMessages(long uid, ArrayList<MessageObject> messages) {
+        messages = filterBlockedMessages(messages);
         updateInterfaceWithMessages(uid, messages, false);
     }
 
