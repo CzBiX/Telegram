@@ -560,16 +560,35 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     };
 
     private ItemTouchHelper itemTouchHelper;
-    private ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.START) {
+    private ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, 0) {
         @Override
         public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
             if (viewHolder.itemView instanceof ChatMessageCell) {
-                if ((currentEncryptedChat == null || AndroidUtilities.getPeerLayerVersion(currentEncryptedChat.layer) >= 46) &&
-                        !isBroadcast &&
-                        (currentChat == null || (!ChatObject.isNotInChat(currentChat) && (!ChatObject.isChannel(currentChat) || ChatObject.canPost(currentChat) || currentChat.megagroup) && ChatObject.canSendMessages(currentChat)))) {
-                    chatListView.cancelClickRunnables(true);
-                    return super.getSwipeDirs(recyclerView, viewHolder);
+                final MessageObject message = ((ChatMessageCell) viewHolder.itemView).getMessageObject();
+                final int type = getMessageType(message);
+
+                if (type < 0) {
+                    return 0;
                 }
+
+                int flags = 0;
+                if (!(currentEncryptedChat != null && AndroidUtilities.getPeerLayerVersion(currentEncryptedChat.layer) < 46 ||
+                        type == 1 && (message.getDialogId() == mergeDialogId || message.isSecretPhoto()) ||
+                        currentEncryptedChat == null && message.getId() < 0 ||
+                        isBroadcast ||
+                        currentChat != null && (ChatObject.isNotInChat(currentChat) || ChatObject.isChannel(currentChat) && !ChatObject.canPost(currentChat) && !currentChat.megagroup || !ChatObject.canSendMessages(currentChat)))) {
+                    if (type == 1 || type != 20 || currentEncryptedChat != null) {
+                        flags |= ItemTouchHelper.START;
+                    }
+                }
+
+                if (message.canEditMessage(currentChat) && !chatActivityEnterView.hasAudioToSend() && message.getDialogId() != mergeDialogId) {
+                    if ((type == 1 && currentChat != null && !isBroadcast) || currentEncryptedChat == null) {
+                        flags |= ItemTouchHelper.END;
+                    }
+                }
+
+                return flags;
             }
             return 0;
         }
@@ -585,14 +604,12 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             itemTouchHelper.attachToRecyclerView(chatListView);
 
             final MessageObject messageObject = ((ChatMessageCell) viewHolder.itemView).getMessageObject();
-            final int msgType = getMessageType(messageObject);
 
-            if (msgType == 1) {
-                if (currentChat != null && !isBroadcast) {
-                    showReplyPanel(true, messageObject, null, null, false);
-                }
-            } else if (msgType != 0 && msgType != 20) {
-                showReplyPanel(true, messageObject, null, null, false);
+            selectedObject = messageObject;
+            if (direction == ItemTouchHelper.START) {
+                processSelectedOption(8);
+            } else if (direction == ItemTouchHelper.END) {
+                processSelectedOption(12);
             }
         }
     };
