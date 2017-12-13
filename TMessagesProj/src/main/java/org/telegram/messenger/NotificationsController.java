@@ -564,6 +564,7 @@ public class NotificationsController {
         if (messageObjects.isEmpty()) {
             return;
         }
+
         final ArrayList<MessageObject> popupArrayAdd = new ArrayList<>(0);
         notificationsQueue.postRunnable(new Runnable() {
             @Override
@@ -575,8 +576,9 @@ public class NotificationsController {
                 boolean allowPinned = preferences.getBoolean("PinnedMessages", true);
                 int popup = 0;
 
-                for (int a = 0; a < messageObjects.size(); a++) {
-                    MessageObject messageObject = messageObjects.get(a);
+                final ArrayList<MessageObject> filteredMessages = MessagesController.getInstance(currentAccount).filterBlockedMessages(messageObjects, true);
+                for (int a = 0; a < filteredMessages.size(); a++) {
+                    MessageObject messageObject = filteredMessages.get(a);
                     long mid = messageObject.getId();
                     long random_id = messageObject.isFcmMessage() ? messageObject.messageOwner.random_id : 0;
                     if (messageObject.messageOwner.to_id.channel_id != 0) {
