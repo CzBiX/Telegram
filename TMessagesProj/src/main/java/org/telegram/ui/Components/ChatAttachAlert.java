@@ -2454,7 +2454,8 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
     }
 
     public void checkCamera(boolean request) {
-        if (baseFragment == null) {
+        // Disable the first camera cell
+        if (baseFragment == null || true) {
             return;
         }
         boolean old = deviceHasGoodCamera;
