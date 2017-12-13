@@ -6521,6 +6521,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     waitingForLoad.remove(index);
                 }
                 ArrayList<MessageObject> messArr = (ArrayList<MessageObject>) args[2];
+                messArr = MessagesController.filterBlockedMessages(messArr);
                 boolean createUnreadLoading = false;
                 if (waitingForReplyMessageLoad) {
                     if (!createUnreadMessageAfterIdLoading) {
