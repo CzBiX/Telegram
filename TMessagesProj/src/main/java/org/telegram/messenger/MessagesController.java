@@ -9723,6 +9723,30 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         return false;
     }
 
+    public ArrayList<MessageObject> filterBlockedMessages(ArrayList<MessageObject> messages, boolean remove) {
+        final ArrayList<MessageObject> filtered = new ArrayList<>();
+        for (MessageObject message : messages) {
+            if (message.isFromUser() && blockedUsers.indexOfKey(message.messageOwner.from_id) >= 0) {
+                if (!remove) {
+                    TLRPC.Message blockMsg = new TLRPC.TL_message();
+                    blockMsg.message = "Blocked message";
+                    blockMsg.id = message.getId();
+                    blockMsg.date = message.messageOwner.date;
+                    MessageObject blockObj = new MessageObject(currentAccount, blockMsg, false);
+                    blockObj.type = 10;
+                    blockObj.contentType = 1;
+
+                    filtered.add(blockObj);
+                }
+                continue;
+            }
+
+            filtered.add(message);
+        }
+
+        return filtered;
+    }
+
     protected void updateInterfaceWithMessages(long uid, ArrayList<MessageObject> messages) {
         updateInterfaceWithMessages(uid, messages, false);
     }
