@@ -451,6 +451,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
             raiseToSpeakRow = rowCount++;
             sendByEnterRow = rowCount++;
             saveToGalleryRow = rowCount++;
+            emojiRow = rowCount++;
             settings2Row = rowCount++;
             stickersRow = rowCount++;
             stickersSection2Row = rowCount++;
