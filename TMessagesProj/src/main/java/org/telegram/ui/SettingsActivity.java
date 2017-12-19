@@ -286,7 +286,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             directShareRow = rowCount++;
         }
         stickersRow = rowCount++;
-        //emojiRow = rowCount++;
+        emojiRow = rowCount++;
         textSizeRow = rowCount++;
         raiseToSpeakRow = rowCount++;
         sendByEnterRow = rowCount++;
