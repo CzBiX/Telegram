@@ -134,6 +134,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
     private int settingsSectionRow;
     private int settingsSectionRow2;
     private int enableAnimationsRow;
+    private int modRow;
     private int notificationRow;
     private int backgroundRow;
     private int themeRow;
@@ -291,6 +292,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         themeRow = rowCount++;
         languageRow = rowCount++;
         enableAnimationsRow = rowCount++;
+        modRow = rowCount++;
         messagesSectionRow = rowCount++;
         messagesSectionRow2 = rowCount++;
         customTabsRow = rowCount++;
@@ -664,6 +666,18 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                         }
                     });
                     linearLayout.addView(cell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
+                    builder.setCustomView(linearLayout);
+                    showDialog(builder.create());
+                } else if (position == modRow) {
+                    BottomSheet.Builder builder = new BottomSheet.Builder(getParentActivity());
+
+                    builder.setApplyTopPadding(false);
+                    builder.setApplyBottomPadding(false);
+                    LinearLayout linearLayout = new LinearLayout(getParentActivity());
+                    linearLayout.setOrientation(LinearLayout.VERTICAL);
+
+                    addModSettings(linearLayout);
+
                     builder.setCustomView(linearLayout);
                     showDialog(builder.create());
                 } else if (position == dumpCallStatsRow) {
@@ -1249,6 +1263,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                         textCell.setText(LocaleController.getString("PrivacyPolicy", R.string.PrivacyPolicy), true);
                     } else if (position == emojiRow) {
                         textCell.setText(LocaleController.getString("Emoji", R.string.Emoji), true);
+                    } else if (position == modRow) {
+                        textCell.setText("Mod Settings", false);
                     }
                     break;
                 }
@@ -1256,7 +1272,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                     TextCheckCell textCell = (TextCheckCell) holder.itemView;
                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
                     if (position == enableAnimationsRow) {
-                        textCell.setTextAndCheck(LocaleController.getString("EnableAnimations", R.string.EnableAnimations), preferences.getBoolean("view_animations", true), false);
+                        textCell.setTextAndCheck(LocaleController.getString("EnableAnimations", R.string.EnableAnimations), preferences.getBoolean("view_animations", true), true);
                     } else if (position == sendByEnterRow) {
                         textCell.setTextAndCheck(LocaleController.getString("SendByEnter", R.string.SendByEnter), preferences.getBoolean("send_by_enter", false), true);
                     } else if (position == saveToGalleryRow) {
@@ -1332,7 +1348,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                     position == clearLogsRow || position == languageRow || position == usernameRow || position == bioRow ||
                     position == switchBackendButtonRow || position == telegramFaqRow || position == contactsSortRow || position == contactsReimportRow || position == saveToGalleryRow ||
                     position == stickersRow || position == raiseToSpeakRow || position == privacyPolicyRow || position == customTabsRow || position == directShareRow || position == versionRow ||
-                    position == emojiRow || position == dataRow || position == themeRow || position == dumpCallStatsRow;
+                    position == emojiRow || position == dataRow || position == themeRow || position == dumpCallStatsRow || position == modRow;
         }
 
         @Override
@@ -1404,7 +1420,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 return 1;
             } else if (position == enableAnimationsRow || position == sendByEnterRow || position == saveToGalleryRow || position == autoplayGifsRow || position == raiseToSpeakRow || position == customTabsRow || position == directShareRow || position == dumpCallStatsRow) {
                 return 3;
-            } else if (position == notificationRow || position == themeRow || position == backgroundRow || position == askQuestionRow || position == sendLogsRow || position == privacyRow || position == clearLogsRow || position == switchBackendButtonRow || position == telegramFaqRow || position == contactsReimportRow || position == textSizeRow || position == languageRow || position == contactsSortRow || position == stickersRow || position == privacyPolicyRow || position == emojiRow || position == dataRow) {
+            } else if (position == notificationRow || position == themeRow || position == backgroundRow || position == askQuestionRow || position == sendLogsRow || position == privacyRow || position == clearLogsRow || position == switchBackendButtonRow || position == telegramFaqRow || position == contactsReimportRow || position == textSizeRow || position == languageRow || position == contactsSortRow || position == stickersRow || position == privacyPolicyRow || position == emojiRow || position == dataRow || position == modRow) {
                 return 2;
             } else if (position == versionRow) {
                 return 5;
@@ -1465,5 +1481,30 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 new ThemeDescription(writeButton, ThemeDescription.FLAG_BACKGROUNDFILTER, null, null, null, null, Theme.key_profile_actionBackground),
                 new ThemeDescription(writeButton, ThemeDescription.FLAG_BACKGROUNDFILTER | ThemeDescription.FLAG_DRAWABLESELECTEDSTATE, null, null, null, null, Theme.key_profile_actionPressedBackground),
         };
+    }
+
+    private void addModSettings(LinearLayout linearLayout) {
+        final SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+
+        final String key = "swipe_right_enabled";
+        String name = "Swipe right to edit";
+        Boolean value = preferences.getBoolean(key, false);
+
+        CheckBoxCell checkBoxCell = new CheckBoxCell(getParentActivity(), true);
+        checkBoxCell.setBackground(Theme.getSelectorDrawable(false));
+        linearLayout.addView(checkBoxCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
+        checkBoxCell.setText(name, "", value, true);
+        checkBoxCell.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
+        checkBoxCell.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CheckBoxCell cell = (CheckBoxCell) v;
+                final boolean checked = cell.isChecked();
+
+                preferences.edit().putBoolean(key, !checked).apply();
+
+                cell.setChecked(!checked, true);
+            }
+        });
     }
 }

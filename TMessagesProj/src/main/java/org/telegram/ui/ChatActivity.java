@@ -604,6 +604,13 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
     private ItemTouchHelper itemTouchHelper;
     private ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, 0) {
+        private final Boolean swipeRightEnabled;
+
+        {
+            final SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+            swipeRightEnabled = preferences.getBoolean("swipe_right_enabled", false);
+        }
+
         @Override
         public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
             if (viewHolder.itemView instanceof ChatMessageCell) {
@@ -625,13 +632,11 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     }
                 }
 
-                /*
-                if (message.canEditMessage(currentChat) && !chatActivityEnterView.hasAudioToSend() && message.getDialogId() != mergeDialogId) {
+                if (swipeRightEnabled && message.canEditMessage(currentChat) && !chatActivityEnterView.hasAudioToSend() && message.getDialogId() != mergeDialogId) {
                     if ((type == 1 && currentChat != null && !isBroadcast) || currentEncryptedChat == null) {
                         flags |= ItemTouchHelper.END;
                     }
                 }
-                */
 
                 return flags;
             }
@@ -648,9 +653,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             itemTouchHelper.attachToRecyclerView(null);
             itemTouchHelper.attachToRecyclerView(chatListView);
 
-            final MessageObject messageObject = ((ChatMessageCell) viewHolder.itemView).getMessageObject();
-
-            selectedObject = messageObject;
+            selectedObject = ((ChatMessageCell) viewHolder.itemView).getMessageObject();
             if (direction == ItemTouchHelper.START) {
                 processSelectedOption(8);
             } else if (direction == ItemTouchHelper.END) {
