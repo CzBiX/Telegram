@@ -8612,21 +8612,25 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         final ArrayList<MessageObject> filtered = new ArrayList<>();
         for (MessageObject message : messages) {
             if (message.isFromUser() && blockedUsers.contains(message.messageOwner.from_id)) {
+                TLRPC.Message blockMsg = new TLRPC.TL_message();
+                blockMsg.message = "Blocked message";
+                blockMsg.id = message.getId();
+                blockMsg.date = message.messageOwner.date;
+                MessageObject blockObj = new MessageObject(blockMsg, null, false);
+                blockObj.type = 10;
+                blockObj.contentType = 1;
+
+                filtered.add(blockObj);
                 continue;
             }
 
             filtered.add(message);
         }
 
-        if (filtered.size() != messages.size()) {
-            return filtered;
-        }
-
-        return messages;
+        return filtered;
     }
 
     protected void updateInterfaceWithMessages(long uid, ArrayList<MessageObject> messages) {
-        messages = filterBlockedMessages(messages);
         updateInterfaceWithMessages(uid, messages, false);
     }
 
