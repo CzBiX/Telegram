@@ -21,6 +21,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
@@ -277,11 +278,20 @@ public class Emoji {
 
         @Override
         public void draw(Canvas canvas) {
-            /*if (MessagesController.getInstance().useSystemEmoji) {
-                //textPaint.setTextSize(getBounds().width());
-                canvas.drawText(EmojiData.data[info.page][info.emojiIndex], getBounds().left, getBounds().bottom, textPaint);
+            Rect b;
+            if (fullSize) {
+                b = getDrawRect();
+            } else {
+                b = getBounds();
+            }
+
+            if (MessagesController.getInstance().useSystemEmoji) {
+                final float offset = (fullSize ? bigImgSize : drawImgSize) * -0.2f;
+                textPaint.setTextSize(b.width() * 0.8f);
+                canvas.drawText(EmojiData.data[info.page][info.emojiIndex], b.left, b.bottom + offset, textPaint);
                 return;
-            }*/
+            }
+
             if (emojiBmp[info.page][info.page2] == null) {
                 if (loadingEmoji[info.page][info.page2]) {
                     return;
@@ -298,12 +308,14 @@ public class Emoji {
                 return;
             }
 
+            /*
             Rect b;
             if (fullSize) {
                 b = getDrawRect();
             } else {
                 b = getBounds();
             }
+            */
 
             //if (!canvas.quickReject(b.left, b.top, b.right, b.bottom, Canvas.EdgeType.AA)) {
                 canvas.drawBitmap(emojiBmp[info.page][info.page2], info.rect, b, paint);
