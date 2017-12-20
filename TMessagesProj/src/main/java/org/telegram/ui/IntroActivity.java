@@ -284,7 +284,7 @@ public class IntroActivity extends Activity implements NotificationCenter.Notifi
                 finish();
             }
         });
-        if (BuildVars.DEBUG_VERSION) {
+        if (BuildVars.DEBUG_VERSION || true) {
             startMessagingButton.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
