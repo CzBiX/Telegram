@@ -6524,7 +6524,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     waitingForLoad.remove(index);
                 }
                 ArrayList<MessageObject> messArr = (ArrayList<MessageObject>) args[2];
-                messArr = MessagesController.filterBlockedMessages(messArr);
+                messArr = MessagesController.filterBlockedMessages(messArr, false);
                 boolean createUnreadLoading = false;
                 if (waitingForReplyMessageLoad) {
                     if (!createUnreadMessageAfterIdLoading) {
@@ -7117,7 +7117,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 boolean updateChat = false;
                 boolean hasFromMe = false;
                 ArrayList<MessageObject> arr = (ArrayList<MessageObject>) args[1];
-                arr = MessagesController.filterBlockedMessages(arr);
+                arr = MessagesController.filterBlockedMessages(arr, false);
                 if (currentEncryptedChat != null && arr.size() == 1) {
                     MessageObject obj = arr.get(0);
 
