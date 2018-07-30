@@ -319,12 +319,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             clearLogsRow = -1;
             dumpCallStatsRow = -1;
         }
-        if (BuildVars.DEBUG_VERSION) {
             forceTcpInCallsRow = rowCount++;
             switchBackendButtonRow = rowCount++;
-        } else {
-            switchBackendButtonRow = -1;
-        }
         versionRow = rowCount++;
         //contactsSectionRow = rowCount++;
         //contactsReimportRow = rowCount++;
