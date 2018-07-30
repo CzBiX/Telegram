@@ -2337,7 +2337,9 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
             passcodeView.onPause();
         }
         ConnectionsManager.getInstance(currentAccount).setAppPaused(true, false);
+        /*
         AndroidUtilities.unregisterUpdates();
+        */
         if (PhotoViewer.hasInstance() && PhotoViewer.getInstance().isVisible()) {
             PhotoViewer.getInstance().onPause();
         }
@@ -2434,8 +2436,10 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
             }
             passcodeView.onResume();
         }
+        /*
         AndroidUtilities.checkForCrashes(this);
         AndroidUtilities.checkForUpdates(this);
+        */
         ConnectionsManager.getInstance(currentAccount).setAppPaused(false, false);
         updateCurrentConnectionState(currentAccount);
         if (PhotoViewer.hasInstance() && PhotoViewer.getInstance().isVisible()) {
