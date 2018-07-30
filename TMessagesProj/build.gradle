@@ -32,7 +32,7 @@ android {
     compileSdkVersion 27
     buildToolsVersion '27.0.3'
 
-    defaultConfig.applicationId = "org.telegram.messenger"
+    defaultConfig.applicationId = "czbix.telegram.messenger"
 
     sourceSets.main.jniLibs.srcDirs = ['./jni/']
 
@@ -57,13 +57,6 @@ android {
     }
 
     signingConfigs {
-        debug {
-            storeFile file("config/release.keystore")
-            storePassword RELEASE_STORE_PASSWORD
-            keyAlias RELEASE_KEY_ALIAS
-            keyPassword RELEASE_KEY_PASSWORD
-        }
-
         release {
             storeFile file("config/release.keystore")
             storePassword RELEASE_STORE_PASSWORD
@@ -76,10 +69,7 @@ android {
         debug {
             debuggable true
             jniDebuggable true
-            signingConfig signingConfigs.debug
             applicationIdSuffix ".beta"
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
         release {
@@ -241,7 +231,7 @@ android {
 
         externalNativeBuild {
             ndkBuild {
-                arguments "NDK_APPLICATION_MK:=jni/Application.mk", "APP_PLATFORM:=android-16", "-j8"
+                arguments "NDK_APPLICATION_MK:=jni/Application.mk", "APP_PLATFORM:=android-17", "-j8"
                 abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
             }
         }
