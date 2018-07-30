@@ -277,7 +277,7 @@ public class IntroActivity extends Activity implements NotificationCenter.Notifi
             destroyed = true;
             finish();
         });
-        if (BuildVars.DEBUG_VERSION) {
+        if (true || BuildVars.DEBUG_VERSION) {
             startMessagingButton.setOnLongClickListener(v -> {
                 ConnectionsManager.getInstance(currentAccount).switchBackend();
                 return true;

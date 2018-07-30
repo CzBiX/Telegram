@@ -347,7 +347,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
 
                 int count = 6;
                 for (int a = 0; a < count; a++) {
-                    if (a >= 3 && a <= 4 && !BuildVars.LOGS_ENABLED || a == 5 && !BuildVars.DEBUG_VERSION) {
+                    if (a >= 3 && a <= 4 && !BuildVars.LOGS_ENABLED || a == 5 && (false && !BuildVars.DEBUG_VERSION)) {
                         continue;
                     }
                     TextCell textCell = new TextCell(context);
@@ -373,7 +373,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                             text = "Switch Backend";
                             break;
                     }
-                    textCell.setText(text, BuildVars.LOGS_ENABLED || BuildVars.DEBUG_VERSION ? a != count - 1 : a != 2);
+                    textCell.setText(text, BuildVars.LOGS_ENABLED || (true || BuildVars.DEBUG_VERSION) ? a != count - 1 : a != 2);
                     textCell.setTag(a);
                     textCell.setBackgroundDrawable(Theme.getSelectorDrawable(false));
                     linearLayoutInviteContainer.addView(textCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));

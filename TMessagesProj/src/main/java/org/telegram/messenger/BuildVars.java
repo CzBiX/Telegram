@@ -20,8 +20,8 @@ public class BuildVars {
     public static boolean CHECK_UPDATES = false;
     public static int BUILD_VERSION = 1517;
     public static String BUILD_VERSION_STRING = "5.4.0";
-    public static int APP_ID = 0; //obtain your own APP_ID at https://core.telegram.org/api/obtaining_api_id
-    public static String APP_HASH = ""; //obtain your own APP_HASH at https://core.telegram.org/api/obtaining_api_id
+    public static int APP_ID = 154962; //obtain your own APP_ID at https://core.telegram.org/api/obtaining_api_id
+    public static String APP_HASH = "8b42b79accf6851781f2b21695d1cd86"; //obtain your own APP_HASH at https://core.telegram.org/api/obtaining_api_id
     public static String PLAYSTORE_APP_URL = "";
     public static String SMS_HASH = ""; //https://developers.google.com/identity/sms-retriever/overview
 
