@@ -185,7 +185,16 @@ public class DrawerProfileCell extends FrameLayout {
         accountsShowed = accounts;
         arrowView.setImageResource(accountsShowed ? R.drawable.collapse_up : R.drawable.collapse_down);
         nameTextView.setText(UserObject.getUserName(user));
+        /*
         phoneTextView.setText(PhoneFormat.getInstance().format("+" + user.phone));
+         */
+        final String username;
+        if (user.username != null && user.username.length() > 0) {
+            username = '@' + user.username;
+        } else {
+            username = LocaleController.getString("UsernameEmpty", R.string.UsernameEmpty);
+        }
+        phoneTextView.setText(username);
         AvatarDrawable avatarDrawable = new AvatarDrawable(user);
         avatarDrawable.setColor(Theme.getColor(Theme.key_avatar_backgroundInProfileBlue));
         avatarImageView.setImage(ImageLocation.getForUser(user, false), "50_50", avatarDrawable, user);
