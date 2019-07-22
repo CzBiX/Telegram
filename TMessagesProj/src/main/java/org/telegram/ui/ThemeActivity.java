@@ -57,7 +57,7 @@ import android.widget.Toast;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BuildConfig;
-import org.telegram.messenger.DataQuery;
+import org.telegram.messenger.MediaDataController;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
@@ -132,6 +132,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
     private int raiseToSpeakRow;
     private int sendByEnterRow;
     private int saveToGalleryRow;
+    private int distanceRow;
     private int enableAnimationsRow;
     private int settings2Row;
     private int stickersRow;
@@ -248,9 +249,15 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                     editor.putInt("fons_size", SharedConfig.fontSize);
                     editor.commit();
                     Theme.chat_msgTextPaint.setTextSize(AndroidUtilities.dp(SharedConfig.fontSize));
+                    int firstVisPos = layoutManager.findFirstVisibleItemPosition();
+                    View firstVisView = firstVisPos != RecyclerView.NO_POSITION ? layoutManager.findViewByPosition(firstVisPos) : null;
+                    int top = firstVisView != null ? firstVisView.getTop() : 0;
                     for (int a = 0; a < cells.length; a++) {
                         cells[a].getMessageObject().resetLayout();
                         cells[a].requestLayout();
+                    }
+                    if (firstVisView != null) {
+                        layoutManager.scrollToPositionWithOffset(firstVisPos, top);
                     }
                 }
             });
@@ -484,6 +491,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
         raiseToSpeakRow = -1;
         sendByEnterRow = -1;
         saveToGalleryRow = -1;
+        distanceRow = -1;
         settings2Row = -1;
         stickersRow = -1;
         stickersSection2Row = -1;
@@ -532,6 +540,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
             sendByEnterRow = rowCount++;
             saveToGalleryRow = rowCount++;
             emojiRow = rowCount++;
+            distanceRow = rowCount++;
             settings2Row = rowCount++;
             stickersRow = rowCount++;
             stickersSection2Row = rowCount++;
@@ -756,6 +765,25 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(SharedConfig.saveToGallery);
                 }
+            } else if (position == distanceRow) {
+                if (getParentActivity() == null) {
+                    return;
+                }
+                AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+                builder.setTitle(LocaleController.getString("DistanceUnitsTitle", R.string.DistanceUnitsTitle));
+                builder.setItems(new CharSequence[]{
+                        LocaleController.getString("DistanceUnitsAutomatic", R.string.DistanceUnitsAutomatic),
+                        LocaleController.getString("DistanceUnitsKilometers", R.string.DistanceUnitsKilometers),
+                        LocaleController.getString("DistanceUnitsMiles", R.string.DistanceUnitsMiles)
+                }, (dialog, which) -> {
+                    SharedConfig.setDistanceSystemType(which);
+                    RecyclerView.ViewHolder holder = listView.findViewHolderForAdapterPosition(distanceRow);
+                    if (holder != null) {
+                        listAdapter.onBindViewHolder(holder, distanceRow);
+                    }
+                });
+                builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
+                showDialog(builder.create());
             } else if (position == customTabsRow) {
                 SharedConfig.toggleCustomTabs();
                 if (view instanceof TextCheckCell) {
@@ -790,7 +818,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                 builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
                 showDialog(builder.create());
             } else if (position == stickersRow) {
-                presentFragment(new StickersActivity(DataQuery.TYPE_IMAGE));
+                presentFragment(new StickersActivity(MediaDataController.TYPE_IMAGE));
             } else if (position == showThemesRows) {
                 presentFragment(new ThemeActivity(THEME_TYPE_ALL));
             } else if (position == emojiRow) {
@@ -1400,7 +1428,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                     } else {
                         currentFile = new File(themeInfo.pathToFile);
                     }
-                    File finalFile = new File(FileLoader.getDirectory(FileLoader.MEDIA_DIR_CACHE), currentFile.getName());
+                    File finalFile = new File(FileLoader.getDirectory(FileLoader.MEDIA_DIR_CACHE), FileLoader.fixFileName(currentFile.getName()));
                     try {
                         if (!AndroidUtilities.copyFile(currentFile, finalFile)) {
                             return;
@@ -1563,6 +1591,13 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                             return;
                         }
                         NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.needSetDayNightTheme, themeInfo, false);
+                        int left = view1.getLeft();
+                        int right = view1.getRight();
+                        if (left < 0) {
+                            horizontalListView.smoothScrollBy(left - AndroidUtilities.dp(8), 0);
+                        } else if (right > horizontalListView.getMeasuredWidth()) {
+                            horizontalListView.smoothScrollBy(right - horizontalListView.getMeasuredWidth(), 0);
+                        }
 
                         int count = innerListView.getChildCount();
                         for (int a = 0; a < count; a++) {
@@ -1638,7 +1673,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                         }
                         cell.setTextAndValue(LocaleController.getString("SortBy", R.string.SortBy), value, true);
                     } else if (position == backgroundRow) {
-                        cell.setText(LocaleController.getString("ChatBackground", R.string.ChatBackground), false);
+                        cell.setText(LocaleController.getString("ChangeChatBackground", R.string.ChangeChatBackground), false);
                     } else if (position == contactsReimportRow) {
                         cell.setText(LocaleController.getString("ImportContacts", R.string.ImportContacts), true);
                     } else if (position == stickersRow) {
@@ -1647,6 +1682,16 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                         cell.setText(LocaleController.getString("Emoji", R.string.Emoji), true);
                     } else if (position == showThemesRows) {
                         cell.setText(LocaleController.getString("ShowAllThemes", R.string.ShowAllThemes), false);
+                    } else if (position == distanceRow) {
+                        String value;
+                        if (SharedConfig.distanceSystemType == 0) {
+                            value = LocaleController.getString("DistanceUnitsAutomatic", R.string.DistanceUnitsAutomatic);
+                        } else if (SharedConfig.distanceSystemType == 1) {
+                            value = LocaleController.getString("DistanceUnitsKilometers", R.string.DistanceUnitsKilometers);
+                        } else {
+                            value = LocaleController.getString("DistanceUnitsMiles", R.string.DistanceUnitsMiles);
+                        }
+                        cell.setTextAndValue(LocaleController.getString("DistanceUnits", R.string.DistanceUnits), value, false);
                     }
                     break;
                 }
@@ -1719,7 +1764,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                         SharedPreferences preferences = MessagesController.getGlobalMainSettings();
                         textCheckCell.setTextAndCheck(LocaleController.getString("SendByEnter", R.string.SendByEnter), preferences.getBoolean("send_by_enter", false), true);
                     } else if (position == saveToGalleryRow) {
-                        textCheckCell.setTextAndCheck(LocaleController.getString("SaveToGallerySettings", R.string.SaveToGallerySettings), SharedConfig.saveToGallery, false);
+                        textCheckCell.setTextAndCheck(LocaleController.getString("SaveToGallerySettings", R.string.SaveToGallerySettings), SharedConfig.saveToGallery, true);
                     } else if (position == raiseToSpeakRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("RaiseToSpeak", R.string.RaiseToSpeak), SharedConfig.raiseToSpeak, true);
                     } else if (position == customTabsRow) {
@@ -1762,7 +1807,8 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
         public int getItemViewType(int position) {
             if (position == scheduleFromRow || position == emojiRow || position == showThemesRows ||
                     position == scheduleToRow || position == scheduleUpdateLocationRow || position == backgroundRow ||
-                    position == contactsReimportRow || position == contactsSortRow || position == stickersRow) {
+                    position == contactsReimportRow || position == contactsSortRow || position == stickersRow ||
+                    position == distanceRow) {
                 return 1;
             } else if (position == automaticBrightnessInfoRow || position == scheduleLocationInfoRow) {
                 return 2;
