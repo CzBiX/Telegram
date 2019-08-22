@@ -28,6 +28,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Spannable;
 import android.text.Spanned;
+import android.text.style.AbsoluteSizeSpan;
 import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
 import android.view.View;
@@ -362,7 +363,7 @@ public class Emoji {
             s = Spannable.Factory.getInstance().newSpannable(cs.toString());
         }
 
-        if (SharedConfig.useSystemEmoji) {
+        if (SharedConfig.useSystemEmoji && !SharedConfig.allowBigEmoji) {
             return s;
         }
 
@@ -489,11 +490,13 @@ public class Emoji {
                         emojiOnly[0]++;
                     }
                     CharSequence code = emojiCode.subSequence(0, emojiCode.length());
-                    drawable = Emoji.getEmojiDrawable(code);
-                    if (drawable != null) {
-                        span = new EmojiSpan(drawable, DynamicDrawableSpan.ALIGN_BOTTOM, size, fontMetrics);
-                        s.setSpan(span, startIndex, startIndex + startLength, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        emojiCount++;
+                    if (!SharedConfig.useSystemEmoji) {
+                        drawable = Emoji.getEmojiDrawable(code);
+                        if (drawable != null) {
+                            span = new EmojiSpan(drawable, DynamicDrawableSpan.ALIGN_BOTTOM, size, fontMetrics);
+                            s.setSpan(span, startIndex, startIndex + startLength, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            emojiCount++;
+                        }
                     }
                     startLength = 0;
                     startIndex = -1;

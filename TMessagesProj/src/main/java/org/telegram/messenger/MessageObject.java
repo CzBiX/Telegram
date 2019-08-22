@@ -19,6 +19,7 @@ import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.text.style.AbsoluteSizeSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
 import android.util.Base64;
@@ -899,10 +900,15 @@ public class MessageObject {
                     emojiOnlyCount = 3;
                     break;
             }
-            Emoji.EmojiSpan[] spans = ((Spannable) messageText).getSpans(0, messageText.length(), Emoji.EmojiSpan.class);
-            if (spans != null && spans.length > 0) {
-                for (int a = 0; a < spans.length; a++) {
-                    spans[a].replaceFontMetrics(emojiPaint.getFontMetricsInt(), size);
+            if (SharedConfig.useSystemEmoji) {
+                final AbsoluteSizeSpan span = new AbsoluteSizeSpan(size);
+                ((Spannable) messageText).setSpan(span, 0, messageText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            } else {
+                Emoji.EmojiSpan[] spans = ((Spannable) messageText).getSpans(0, messageText.length(), Emoji.EmojiSpan.class);
+                if (spans != null && spans.length > 0) {
+                    for (int a = 0; a < spans.length; a++) {
+                        spans[a].replaceFontMetrics(emojiPaint.getFontMetricsInt(), size);
+                    }
                 }
             }
         }
