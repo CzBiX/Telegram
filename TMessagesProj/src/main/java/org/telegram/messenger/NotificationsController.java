@@ -590,6 +590,7 @@ public class NotificationsController extends BaseController {
             }
             return;
         }
+
         final ArrayList<MessageObject> popupArrayAdd = new ArrayList<>(0);
         notificationsQueue.postRunnable(() -> {
             boolean added = false;
@@ -601,8 +602,9 @@ public class NotificationsController extends BaseController {
             int popup = 0;
             boolean hasScheduled = false;
 
-            for (int a = 0; a < messageObjects.size(); a++) {
-                MessageObject messageObject = messageObjects.get(a);
+            final ArrayList<MessageObject> filteredMessages = MessagesController.getInstance(currentAccount).filterBlockedMessages(messageObjects, true);
+            for (int a = 0; a < filteredMessages.size(); a++) {
+                MessageObject messageObject = filteredMessages.get(a);
                 if (messageObject.messageOwner != null && messageObject.messageOwner.silent && (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionContactSignUp || messageObject.messageOwner.action instanceof TLRPC.TL_messageActionUserJoined)) {
                     continue;
                 }

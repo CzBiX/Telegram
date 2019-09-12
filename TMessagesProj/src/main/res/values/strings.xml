@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="AppName">Telegram</string>
-    <string name="AppNameBeta">Telegram Beta</string>
+    <string name="AppName">Telegram Mod</string>
+    <string name="AppNameBeta">Telegram Mod Beta</string>
     <string name="LanguageName">English</string>
     <string name="English">English</string>
     <string name="LanguageNameInEnglish">English</string>
@@ -1558,7 +1558,7 @@
     <string name="DirectShareInfo">Show recent chats in Android share menu</string>
     <string name="Emoji">Emoji</string>
     <string name="LargeEmoji">Large Emoji</string>
-    <string name="EmojiUseDefault">Use system default emoji</string>
+    <string name="EmojiUseDefault">System emoji</string>
     <string name="TelegramVersion">Telegram for Android %1$s</string>
     <string name="DebugMenu">Debug Menu</string>
     <string name="DebugSendLogs">Send Logs</string>

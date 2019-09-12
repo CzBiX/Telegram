@@ -133,6 +133,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
     private int stickersSection2Row;
 
     private int emojiRow;
+    private int systemEmojiRow;
     private int contactsReimportRow;
     private int contactsSortRow;
 
@@ -289,6 +290,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
 
         rowCount = 0;
         emojiRow = -1;
+        systemEmojiRow = -1;
         contactsReimportRow = -1;
         contactsSortRow = -1;
         scheduleLocationRow = -1;
@@ -369,6 +371,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
             directShareRow = rowCount++;
             enableAnimationsRow = rowCount++;
             emojiRow = rowCount++;
+            systemEmojiRow = rowCount++;
             raiseToSpeakRow = rowCount++;
             sendByEnterRow = rowCount++;
             saveToGalleryRow = rowCount++;
@@ -650,6 +653,11 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                 SharedConfig.toggleBigEmoji();
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(SharedConfig.allowBigEmoji);
+                }
+            } else if (position == systemEmojiRow) {
+                SharedConfig.toggleSystemEmoji();
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(SharedConfig.useSystemEmoji);
                 }
             } else if (position == nightThemeRow) {
                 if (LocaleController.isRTL && x <= AndroidUtilities.dp(76) || !LocaleController.isRTL && x >= view.getMeasuredWidth() - AndroidUtilities.dp(76)) {
@@ -1613,6 +1621,8 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                         textCheckCell.setTextAndValueAndCheck(LocaleController.getString("DirectShare", R.string.DirectShare), LocaleController.getString("DirectShareInfo", R.string.DirectShareInfo), SharedConfig.directShare, false, true);
                     } else if (position == emojiRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("LargeEmoji", R.string.LargeEmoji), SharedConfig.allowBigEmoji, true);
+                    } else if (position == systemEmojiRow) {
+                        textCheckCell.setTextAndCheck(LocaleController.getString("EmojiUseDefault", R.string.EmojiUseDefault), SharedConfig.useSystemEmoji, true);
                     }
                     break;
                 }
@@ -1685,7 +1695,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                 return 6;
             } else if (position == scheduleLocationRow || position == enableAnimationsRow || position == sendByEnterRow ||
                     position == saveToGalleryRow || position == raiseToSpeakRow || position == customTabsRow ||
-                    position == directShareRow || position == emojiRow) {
+                    position == directShareRow || position == emojiRow || position == systemEmojiRow) {
                 return 7;
             } else if (position == textSizeRow) {
                 return 8;

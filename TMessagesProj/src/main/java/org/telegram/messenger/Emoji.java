@@ -19,6 +19,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
@@ -27,6 +28,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Spannable;
 import android.text.Spanned;
+import android.text.style.AbsoluteSizeSpan;
 import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
 import android.view.View;
@@ -266,11 +268,20 @@ public class Emoji {
 
         @Override
         public void draw(Canvas canvas) {
-            /*if (MessagesController.getInstance().useSystemEmoji) {
-                //textPaint.setTextSize(getBounds().width());
-                canvas.drawText(EmojiData.data[info.page][info.emojiIndex], getBounds().left, getBounds().bottom, textPaint);
+            Rect b;
+            if (fullSize) {
+                b = getDrawRect();
+            } else {
+                b = getBounds();
+            }
+
+            if (SharedConfig.useSystemEmoji) {
+                final float offset = (fullSize ? bigImgSize : drawImgSize) * -0.2f;
+                paint.setTextSize(b.width() * 0.8f);
+                canvas.drawText(EmojiData.data[info.page][info.emojiIndex], b.left, b.bottom + offset, paint);
                 return;
-            }*/
+            }
+
             if (emojiBmp[info.page][info.page2] == null) {
                 if (loadingEmoji[info.page][info.page2]) {
                     return;
@@ -284,12 +295,14 @@ public class Emoji {
                 return;
             }
 
+            /*
             Rect b;
             if (fullSize) {
                 b = getDrawRect();
             } else {
                 b = getBounds();
             }
+            */
 
             //if (!canvas.quickReject(b.left, b.top, b.right, b.bottom, Canvas.EdgeType.AA)) {
                 canvas.drawBitmap(emojiBmp[info.page][info.page2], info.rect, b, paint);
@@ -340,7 +353,7 @@ public class Emoji {
     }
 
     public static CharSequence replaceEmoji(CharSequence cs, Paint.FontMetricsInt fontMetrics, int size, boolean createNew, int[] emojiOnly) {
-        if (SharedConfig.useSystemEmoji || cs == null || cs.length() == 0) {
+        if (cs == null || cs.length() == 0) {
             return cs;
         }
         Spannable s;
@@ -349,6 +362,11 @@ public class Emoji {
         } else {
             s = Spannable.Factory.getInstance().newSpannable(cs.toString());
         }
+
+        if (SharedConfig.useSystemEmoji && !SharedConfig.allowBigEmoji) {
+            return s;
+        }
+
         long buf = 0;
         int emojiCount = 0;
         char c;
@@ -472,11 +490,13 @@ public class Emoji {
                         emojiOnly[0]++;
                     }
                     CharSequence code = emojiCode.subSequence(0, emojiCode.length());
-                    drawable = Emoji.getEmojiDrawable(code);
-                    if (drawable != null) {
-                        span = new EmojiSpan(drawable, DynamicDrawableSpan.ALIGN_BOTTOM, size, fontMetrics);
-                        s.setSpan(span, startIndex, startIndex + startLength, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        emojiCount++;
+                    if (!SharedConfig.useSystemEmoji) {
+                        drawable = Emoji.getEmojiDrawable(code);
+                        if (drawable != null) {
+                            span = new EmojiSpan(drawable, DynamicDrawableSpan.ALIGN_BOTTOM, size, fontMetrics);
+                            s.setSpan(span, startIndex, startIndex + startLength, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            emojiCount++;
+                        }
                     }
                     startLength = 0;
                     startIndex = -1;
