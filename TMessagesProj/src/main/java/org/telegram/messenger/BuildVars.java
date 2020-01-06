@@ -16,10 +16,11 @@ public class BuildVars {
     public static boolean DEBUG_VERSION = false;
     public static boolean DEBUG_PRIVATE_VERSION = false;
     public static boolean LOGS_ENABLED = false;
-    public static boolean USE_CLOUD_STRINGS = true;
+    public static boolean USE_CLOUD_STRINGS = false;
     public static boolean CHECK_UPDATES = false;
-    public static int BUILD_VERSION = 1710;
-    public static String BUILD_VERSION_STRING = "5.11.0";
+    public static boolean TON_WALLET_STANDALONE = false;
+    public static int BUILD_VERSION = 1828;
+    public static String BUILD_VERSION_STRING = "5.13.1";
     public static int APP_ID = 154962; //obtain your own APP_ID at https://core.telegram.org/api/obtaining_api_id
     public static String APP_HASH = "8b42b79accf6851781f2b21695d1cd86"; //obtain your own APP_HASH at https://core.telegram.org/api/obtaining_api_id
     public static String SMS_HASH = ""; //https://developers.google.com/identity/sms-retriever/overview

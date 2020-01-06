@@ -17,12 +17,12 @@ configurations.all {
 dependencies {
     implementation 'androidx.core:core:1.1.0-beta01'
     implementation 'androidx.palette:palette:1.0.0'
-    implementation 'androidx.exifinterface:exifinterface:1.1.0-beta01'
+    implementation 'androidx.exifinterface:exifinterface:1.1.0'
 
     compileOnly 'org.checkerframework:checker-qual:2.5.2'
     compileOnly 'org.checkerframework:checker-compat-qual:2.5.0'
-    implementation 'com.google.firebase:firebase-messaging:20.0.0'
-    implementation 'com.google.firebase:firebase-config:19.0.0'
+    implementation 'com.google.firebase:firebase-messaging:20.1.0'
+    implementation 'com.google.firebase:firebase-config:19.1.0'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
     implementation 'com.google.android.gms:play-services-vision:16.2.0'
@@ -31,11 +31,13 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:17.0.0'
     implementation 'com.googlecode.mp4parser:isoparser:1.0.6'
     implementation 'com.stripe:stripe-android:2.0.2'
+    implementation files('libs/libgsaverification-client.aar')
 }
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '28.0.3'
+    compileSdkVersion 29
+    buildToolsVersion '29.0.2'
+    ndkVersion "20.0.5594570"
 
     defaultConfig.applicationId = "czbix.telegram.messenger"
 
@@ -78,6 +80,34 @@ android {
             applicationIdSuffix ".beta"
         }
 
+        /*debugAsan {
+            debuggable true
+            jniDebuggable true
+            signingConfig signingConfigs.debug
+            applicationIdSuffix ".beta"
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            packagingOptions {
+                doNotStrip "**.so"
+            }
+
+            sourceSets {
+                main {
+                    jniLibs {
+                        srcDir {
+                            'jniLibs'
+                        }
+                    }
+                    resources {
+                        srcDir {
+                            'jniRes'
+                        }
+                    }
+                }
+            }
+        }*/
+
         debugMultidex {
             initWith debug
             minifyEnabled false
@@ -110,6 +140,10 @@ android {
     sourceSets.debug {
         manifest.srcFile 'config/debug/AndroidManifest.xml'
     }
+
+    /*sourceSets.debugAsan {
+        manifest.srcFile 'config/debug/AndroidManifest.xml'
+    }*/
 
     sourceSets.debugMultidex {
         manifest.srcFile 'config/debug/AndroidManifest.xml'
@@ -196,6 +230,9 @@ android {
             sourceSets.debug {
                 manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
             }
+            /*sourceSets.debugAsan {
+                manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
+            }*/
             sourceSets.release {
                 manifest.srcFile 'config/release/AndroidManifest_SDK23.xml'
             }
@@ -223,6 +260,9 @@ android {
             sourceSets.debug {
                 manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
             }
+            /*sourceSets.debugAsan {
+                manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
+            }*/
             sourceSets.release {
                 manifest.srcFile 'config/release/AndroidManifest_SDK23.xml'
             }
@@ -232,10 +272,11 @@ android {
         }
     }
 
-    defaultConfig.versionCode = 1710
+    defaultConfig.versionCode = 1828
 
     applicationVariants.all { variant ->
         variant.outputs.all { output ->
+            outputFileName = "app.apk"
             output.getProcessManifestProvider().get().doLast {
                 def abiVersion = variant.productFlavors.get(0).abiVersionCode
 
@@ -265,15 +306,15 @@ android {
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 27
-        versionName "5.11.0"
+        targetSdkVersion 28
+        versionName "5.13.1"
 
         multiDexEnabled true
         vectorDrawables.generatedDensities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
 
         externalNativeBuild {
             ndkBuild {
-                arguments "-j"
+                arguments "--jobs"
                 abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
             }
         }

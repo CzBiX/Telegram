@@ -55,6 +55,7 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.EmptyCell;
 import org.telegram.ui.Cells.FeaturedStickerSetInfoCell;
 import org.telegram.ui.Cells.StickerEmojiCell;
+import org.telegram.ui.ChatActivity;
 import org.telegram.ui.ContentPreviewViewer;
 
 import java.util.ArrayList;
@@ -162,10 +163,18 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
         public boolean needOpen() {
             return false;
         }
+
+        @Override
+        public long getDialogId() {
+            if (parentFragment instanceof ChatActivity) {
+                return ((ChatActivity) parentFragment).getDialogId();
+            }
+            return 0;
+        }
     };
 
     public StickersAlert(Context context, Object parentObject, TLRPC.Photo photo) {
-        super(context, false, 1);
+        super(context, false);
         parentActivity = (Activity) context;
         final TLRPC.TL_messages_getAttachedStickers req = new TLRPC.TL_messages_getAttachedStickers();
         TLRPC.TL_inputStickeredMediaPhoto inputStickeredMediaPhoto = new TLRPC.TL_inputStickeredMediaPhoto();
@@ -215,7 +224,7 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
     }
 
     public StickersAlert(Context context, BaseFragment baseFragment, TLRPC.InputStickerSet set, TLRPC.TL_messages_stickerSet loadedSet, StickersAlertDelegate stickersAlertDelegate) {
-        super(context, false, 1);
+        super(context, false);
         delegate = stickersAlertDelegate;
         inputStickerSet = set;
         stickerSet = loadedSet;
@@ -800,6 +809,7 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
             @Override
             public void onAnimationEnd(Animator animation) {
                 stickerPreviewLayout.setVisibility(View.GONE);
+                stickerImageView.setImageDrawable(null);
             }
         });
         animatorSet.start();

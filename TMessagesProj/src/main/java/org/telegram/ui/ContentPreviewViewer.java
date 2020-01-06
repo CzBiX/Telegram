@@ -77,6 +77,7 @@ public class ContentPreviewViewer {
         boolean needSend();
         boolean canSchedule();
         boolean isInScheduleMode();
+        long getDialogId();
 
         default boolean needOpen() {
             return true;
@@ -149,7 +150,7 @@ public class ContentPreviewViewer {
                     }
                     if (delegate.canSchedule()) {
                         items.add(LocaleController.getString("Schedule", R.string.Schedule));
-                        icons.add(R.drawable.photo_timer);
+                        icons.add(R.drawable.msg_timer);
                         actions.add(3);
                     }
                     if (currentStickerSet != null && delegate.needOpen()) {
@@ -158,7 +159,7 @@ public class ContentPreviewViewer {
                         actions.add(1);
                     }
                 }
-                if (!MessageObject.isMaskDocument(currentDocument) && (inFavs || MediaDataController.getInstance(currentAccount).canAddStickerToFavorites())) {
+                if (!MessageObject.isMaskDocument(currentDocument) && (inFavs || MediaDataController.getInstance(currentAccount).canAddStickerToFavorites() && MessageObject.isStickerHasSet(currentDocument))) {
                     items.add(inFavs ? LocaleController.getString("DeleteFromFavorites", R.string.DeleteFromFavorites) : LocaleController.getString("AddToFavorites", R.string.AddToFavorites));
                     icons.add(inFavs ? R.drawable.outline_unfave : R.drawable.outline_fave);
                     actions.add(2);
@@ -188,7 +189,7 @@ public class ContentPreviewViewer {
                         TLRPC.Document sticker = currentDocument;
                         Object parent = parentObject;
                         ContentPreviewViewerDelegate stickerPreviewViewerDelegate = delegate;
-                        AlertsCreator.createScheduleDatePickerDialog(parentActivity, false, (notify, scheduleDate) -> stickerPreviewViewerDelegate.sendSticker(sticker, parent, notify, scheduleDate));
+                        AlertsCreator.createScheduleDatePickerDialog(parentActivity, stickerPreviewViewerDelegate.getDialogId(), (notify, scheduleDate) -> stickerPreviewViewerDelegate.sendSticker(sticker, parent, notify, scheduleDate));
                     }
                 });
                 builder.setDimBehind(false);
@@ -201,7 +202,7 @@ public class ContentPreviewViewer {
                 containerView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
             } else if (delegate != null) {
                 animateY = true;
-                visibleDialog = new BottomSheet(parentActivity, false, 0) {
+                visibleDialog = new BottomSheet(parentActivity, false) {
                     @Override
                     protected void onContainerTranslationYChanged(float translationY) {
                         if (animateY) {
@@ -230,7 +231,7 @@ public class ContentPreviewViewer {
                 }
                 if (delegate.canSchedule()) {
                     items.add(LocaleController.getString("Schedule", R.string.Schedule));
-                    icons.add(R.drawable.photo_timer);
+                    icons.add(R.drawable.msg_timer);
                     actions.add(3);
                 }
 
@@ -238,7 +239,7 @@ public class ContentPreviewViewer {
                 if (currentDocument != null) {
                     if (canDelete = MediaDataController.getInstance(currentAccount).hasRecentGif(currentDocument)) {
                         items.add(LocaleController.formatString("Delete", R.string.Delete));
-                        icons.add(R.drawable.chats_delete);
+                        icons.add(R.drawable.msg_delete);
                         actions.add(1);
                     } else {
                         items.add(LocaleController.formatString("SaveToGIFs", R.string.SaveToGIFs));
@@ -271,7 +272,7 @@ public class ContentPreviewViewer {
                         TLRPC.BotInlineResult result = inlineResult;
                         Object parent = parentObject;
                         ContentPreviewViewerDelegate stickerPreviewViewerDelegate = delegate;
-                        AlertsCreator.createScheduleDatePickerDialog(parentActivity, false, (notify, scheduleDate) -> stickerPreviewViewerDelegate.sendGif(document != null ? document : result, notify, scheduleDate));
+                        AlertsCreator.createScheduleDatePickerDialog(parentActivity, stickerPreviewViewerDelegate.getDialogId(), (notify, scheduleDate) -> stickerPreviewViewerDelegate.sendGif(document != null ? document : result, notify, scheduleDate));
                     }
                 });
                 visibleDialog.setDimBehind(false);
