@@ -3,6 +3,7 @@ package org.telegram.ui.Components;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.graphics.Rect;
 import android.os.Build;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -23,6 +24,7 @@ import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
+import org.telegram.messenger.SharedConfig;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
@@ -99,6 +101,14 @@ public class EditTextEmoji extends FrameLayout implements NotificationCenter.Not
                     FileLog.e(e);
                 }
                 return false;
+            }
+
+            @Override
+            public boolean requestRectangleOnScreen(Rect rectangle) {
+                if (SharedConfig.smoothKeyboard) {
+                    rectangle.bottom += AndroidUtilities.dp(1000);
+                }
+                return super.requestRectangleOnScreen(rectangle);
             }
         };
         editText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);

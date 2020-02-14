@@ -177,7 +177,7 @@ public class PopupNotificationActivity extends Activity implements NotificationC
         statusDrawables[3] = new PlayingGameDrawable();
         statusDrawables[4] = new RoundStatusDrawable();
 
-        SizeNotifierFrameLayout contentView = new SizeNotifierFrameLayout(this) {
+        SizeNotifierFrameLayout contentView = new SizeNotifierFrameLayout(this, false) {
             @Override
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                 int widthMode = MeasureSpec.getMode(widthMeasureSpec);
@@ -416,6 +416,11 @@ public class PopupNotificationActivity extends Activity implements NotificationC
 
             @Override
             public void onUpdateSlowModeButton(View button, boolean show, CharSequence time) {
+
+            }
+
+            @Override
+            public void onSendLongClick() {
 
             }
         });

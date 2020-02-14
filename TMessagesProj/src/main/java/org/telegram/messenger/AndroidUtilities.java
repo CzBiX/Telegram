@@ -51,8 +51,6 @@ import android.provider.Settings;
 
 import androidx.core.content.FileProvider;
 import androidx.viewpager.widget.ViewPager;
-import drinkless.org.ton.Client;
-import drinkless.org.ton.TonApi;
 
 import android.telephony.TelephonyManager;
 import android.text.Selection;
@@ -393,21 +391,29 @@ public class AndroidUtilities {
         return media ? documentMediaIcons[0] : documentIcons[0];
     }
 
+    public static int calcBitmapColor(Bitmap bitmap) {
+        try {
+            Bitmap b = Bitmaps.createScaledBitmap(bitmap, 1, 1, true);
+            if (b != null) {
+                int bitmapColor = b.getPixel(0, 0);
+                if (bitmap != b) {
+                    b.recycle();
+                }
+                return bitmapColor;
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+        return 0;
+    }
+
     public static int[] calcDrawableColor(Drawable drawable) {
         int bitmapColor = 0xff000000;
         int[] result = new int[4];
         try {
             if (drawable instanceof BitmapDrawable) {
                 Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-                if (bitmap != null) {
-                    Bitmap b = Bitmaps.createScaledBitmap(bitmap, 1, 1, true);
-                    if (b != null) {
-                        bitmapColor = b.getPixel(0, 0);
-                        if (bitmap != b) {
-                            b.recycle();
-                        }
-                    }
-                }
+                bitmapColor = calcBitmapColor(bitmap);
             } else if (drawable instanceof ColorDrawable) {
                 bitmapColor = ((ColorDrawable) drawable).getColor();
             } else if (drawable instanceof BackgroundGradientDrawable) {
@@ -514,7 +520,7 @@ public class AndroidUtilities {
     }
 
     public static void requestAdjustResize(Activity activity, int classGuid) {
-        if (activity == null || isTablet()) {
+        if (activity == null || isTablet() || SharedConfig.smoothKeyboard) {
             return;
         }
         activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
@@ -531,7 +537,7 @@ public class AndroidUtilities {
     }
 
     public static void removeAdjustResize(Activity activity, int classGuid) {
-        if (activity == null || isTablet()) {
+        if (activity == null || isTablet() || SharedConfig.smoothKeyboard) {
             return;
         }
         if (adjustOwnerClassGuid == classGuid) {
@@ -1373,7 +1379,7 @@ public class AndroidUtilities {
                 roundMessageInset = dp(2);
             }
             if (BuildVars.LOGS_ENABLED) {
-                FileLog.e("display size = " + displaySize.x + " " + displaySize.y + " " + displayMetrics.xdpi + "x" + displayMetrics.ydpi);
+                FileLog.e("density = " + density + " display size = " + displaySize.x + " " + displaySize.y + " " + displayMetrics.xdpi + "x" + displayMetrics.ydpi);
             }
         } catch (Exception e) {
             FileLog.e(e);
@@ -1827,15 +1833,23 @@ public class AndroidUtilities {
         }
     }
 
+    public static boolean needShowPasscode() {
+        return needShowPasscode(false);
+    }
+
     public static boolean needShowPasscode(boolean reset) {
         boolean wasInBackground = ForegroundDetector.getInstance().isWasInBackground(reset);
         if (reset) {
             ForegroundDetector.getInstance().resetBackgroundVar();
         }
-        int uptime = (int) (SystemClock.uptimeMillis() / 1000);
+        int uptime = (int) (SystemClock.elapsedRealtime() / 1000);
+        if (BuildVars.LOGS_ENABLED && reset && SharedConfig.passcodeHash.length() > 0) {
+            FileLog.d("wasInBackground = " + wasInBackground + " appLocked = " + SharedConfig.appLocked + " autoLockIn = " + SharedConfig.autoLockIn + " lastPauseTime = " + SharedConfig.lastPauseTime + " uptime = " + uptime);
+        }
         return SharedConfig.passcodeHash.length() > 0 && wasInBackground &&
-                (SharedConfig.appLocked || SharedConfig.autoLockIn != 0 && SharedConfig.lastPauseTime != 0 && !SharedConfig.appLocked &&
-                        (SharedConfig.lastPauseTime + SharedConfig.autoLockIn) <= uptime || uptime + 5 < SharedConfig.lastPauseTime);
+                (SharedConfig.appLocked ||
+                        SharedConfig.autoLockIn != 0 && SharedConfig.lastPauseTime != 0 && !SharedConfig.appLocked && (SharedConfig.lastPauseTime + SharedConfig.autoLockIn) <= uptime ||
+                        uptime + 5 < SharedConfig.lastPauseTime);
     }
 
     public static void shakeView(final View view, final float x, final int num) {
@@ -3067,34 +3081,6 @@ public class AndroidUtilities {
 
     public static boolean allowScreenCapture() {
         return SharedConfig.passcodeHash.length() == 0 || SharedConfig.allowScreenCapture;
-    }
-
-    public static void getTonWalletSalt(int account, TonController.BytesCallback callback) {
-        TLRPC.TL_wallet_getKeySecretSalt req = new TLRPC.TL_wallet_getKeySecretSalt();
-        ConnectionsManager.getInstance(account).sendRequest(req, (response, error) -> {
-            if (response instanceof TLRPC.TL_wallet_secretSalt) {
-                callback.run(((TLRPC.TL_wallet_secretSalt) response).salt);
-            } else {
-                callback.run(null);
-            }
-        });
-    }
-
-    public static void processTonUpdate(int account, Client client, TonApi.Object object) {
-        if (object instanceof TonApi.UpdateSendLiteServerQuery) {
-            TonApi.UpdateSendLiteServerQuery query = (TonApi.UpdateSendLiteServerQuery) object;
-            long id = query.id;
-            TLRPC.TL_wallet_sendLiteRequest req = new TLRPC.TL_wallet_sendLiteRequest();
-            req.body = query.data;
-            ConnectionsManager.getInstance(account).sendRequest(req, (response, error) -> {
-                if (response instanceof TLRPC.TL_wallet_liteResponse) {
-                    TLRPC.TL_wallet_liteResponse res = (TLRPC.TL_wallet_liteResponse) response;
-                    client.send(new TonApi.OnLiteServerQueryResult(id, res.response), null);
-                } else if (error != null) {
-                    client.send(new TonApi.OnLiteServerQueryError(id, new TonApi.Error(error.code, error.text)), null);
-                }
-            }, ConnectionsManager.RequestFlagWithoutLogin);
-        }
     }
 
     public static File getSharingDirectory() {

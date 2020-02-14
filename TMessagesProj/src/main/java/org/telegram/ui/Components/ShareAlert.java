@@ -56,12 +56,14 @@ import org.telegram.messenger.MessagesStorage;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SendMessagesHelper;
+import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.Utilities;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.NativeByteBuffer;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BottomSheet;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.ShareDialogCell;
@@ -89,6 +91,7 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
     private ShareSearchAdapter searchAdapter;
     private ArrayList<MessageObject> sendingMessageObjects;
     private String sendingText;
+    private int hasPoll;
     private EmptyTextProgressView searchEmptyView;
     private Drawable shadowDrawable;
     private View[] shadow = new View[2];
@@ -263,6 +266,18 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
         isChannel = channel;
         sendingText = text;
 
+        if (sendingMessageObjects != null) {
+            for (int a = 0, N = sendingMessageObjects.size(); a < N; a++) {
+                MessageObject messageObject = sendingMessageObjects.get(a);
+                if (messageObject.isPoll()) {
+                    hasPoll = messageObject.isPublicPoll() ? 2 : 1;
+                    if (hasPoll == 2) {
+                        break;
+                    }
+                }
+            }
+        }
+
         if (channel) {
             loadingLink = true;
             TLRPC.TL_channels_exportMessageLink req = new TLRPC.TL_channels_exportMessageLink();
@@ -280,7 +295,7 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
         }
 
 
-        SizeNotifierFrameLayout sizeNotifierFrameLayout = new SizeNotifierFrameLayout(context) {
+        SizeNotifierFrameLayout sizeNotifierFrameLayout = new SizeNotifierFrameLayout(context, false) {
 
             private boolean ignoreLayout = false;
             private RectF rect1 = new RectF();
@@ -295,7 +310,7 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
                     ignoreLayout = false;
                 }
                 int availableHeight = totalHeight - getPaddingTop();
-                int keyboardSize = getKeyboardHeight();
+                int keyboardSize = SharedConfig.smoothKeyboard ? 0 : getKeyboardHeight();
                 if (!AndroidUtilities.isInMultiwindow && keyboardSize <= AndroidUtilities.dp(20)) {
                     availableHeight -= commentTextView.getEmojiPadding();
                 }
@@ -319,7 +334,7 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
                 setMeasuredDimension(widthSize, heightSize);
                 widthSize -= backgroundPaddingLeft * 2;
 
-                int keyboardSize = getKeyboardHeight();
+                int keyboardSize = SharedConfig.smoothKeyboard ? 0 : getKeyboardHeight();
                 if (keyboardSize <= AndroidUtilities.dp(20)) {
                     if (!AndroidUtilities.isInMultiwindow) {
                         heightSize -= commentTextView.getEmojiPadding();
@@ -368,7 +383,8 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
             protected void onLayout(boolean changed, int l, int t, int r, int b) {
                 final int count = getChildCount();
 
-                int paddingBottom = getKeyboardHeight() <= AndroidUtilities.dp(20) && !AndroidUtilities.isInMultiwindow && !AndroidUtilities.isTablet() ? commentTextView.getEmojiPadding() : 0;
+                int keyboardSize = SharedConfig.smoothKeyboard ? 0 : getKeyboardHeight();
+                int paddingBottom = keyboardSize <= AndroidUtilities.dp(20) && !AndroidUtilities.isInMultiwindow && !AndroidUtilities.isTablet() ? commentTextView.getEmojiPadding() : 0;
                 setBottomClip(paddingBottom);
 
                 for (int i = 0; i < count; i++) {
@@ -422,7 +438,7 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
                         if (AndroidUtilities.isTablet()) {
                             childTop = getMeasuredHeight() - child.getMeasuredHeight();
                         } else {
-                            childTop = getMeasuredHeight() + getKeyboardHeight() - child.getMeasuredHeight();
+                            childTop = getMeasuredHeight() + keyboardSize - child.getMeasuredHeight();
                         }
                     }
                     child.layout(childLeft, childTop, childLeft + width, childTop + height);
@@ -561,6 +577,27 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
             }
             if (dialog == null) {
                 return;
+            }
+            if (hasPoll != 0) {
+                int lowerId = (int) dialog.id;
+                if (lowerId < 0) {
+                    TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(-lowerId);
+                    boolean isChannel = ChatObject.isChannel(chat) && hasPoll == 2 && !chat.megagroup;
+                    if (isChannel || !ChatObject.canSendPolls(chat)) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        builder.setTitle(LocaleController.getString("SendMessageTitle", R.string.SendMessageTitle));
+                        if (isChannel) {
+                            builder.setMessage(LocaleController.getString("PublicPollCantForward", R.string.PublicPollCantForward));
+                        } else if (ChatObject.isActionBannedByDefault(chat, ChatObject.ACTION_SEND_POLLS)) {
+                            builder.setMessage(LocaleController.getString("ErrorSendRestrictedPollsAll", R.string.ErrorSendRestrictedPollsAll));
+                        } else {
+                            builder.setMessage(LocaleController.getString("ErrorSendRestrictedPolls", R.string.ErrorSendRestrictedPolls));
+                        }
+                        builder.setNegativeButton(LocaleController.getString("OK", R.string.OK), null);
+                        builder.show();
+                        return;
+                    }
+                }
             }
             ShareDialogCell cell = (ShareDialogCell) view;
             if (selectedDialogs.indexOfKey(dialog.id) >= 0) {

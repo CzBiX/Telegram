@@ -237,7 +237,9 @@ public class ThemeDescription {
                 if (drawablesToUpdate[a] == null) {
                     continue;
                 }
-                if (drawablesToUpdate[a] instanceof ScamDrawable) {
+                if (drawablesToUpdate[a] instanceof BackDrawable) {
+                    ((BackDrawable) drawablesToUpdate[a]).setColor(color);
+                } else if (drawablesToUpdate[a] instanceof ScamDrawable) {
                     ((ScamDrawable) drawablesToUpdate[a]).setColor(color);
                 } else if (drawablesToUpdate[a] instanceof RLottieDrawable) {
                     if (lottieLayerName != null) {
@@ -505,7 +507,7 @@ public class ThemeDescription {
                 if ((changeFlags & FLAG_CHECKTAG) == 0 || checkTag(currentKey, child)) {
                     passedCheck = true;
                     child.invalidate();
-                    if ((changeFlags & FLAG_BACKGROUNDFILTER) != 0) {
+                    if (listClassesFieldName == null && (changeFlags & FLAG_BACKGROUNDFILTER) != 0) {
                         Drawable drawable = child.getBackground();
                         if (drawable != null) {
                             if ((changeFlags & FLAG_CELLBACKGROUNDCOLOR) != 0) {
@@ -623,7 +625,17 @@ public class ThemeDescription {
                                         textView.setTextColor(color);
                                     }
                                 } else if (object instanceof ImageView) {
-                                    ((ImageView) object).setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY));
+                                    ImageView imageView = (ImageView) object;
+                                    Drawable drawable = imageView.getDrawable();
+                                    if (drawable instanceof CombinedDrawable) {
+                                        if ((changeFlags & FLAG_BACKGROUNDFILTER) != 0) {
+                                            ((CombinedDrawable) drawable).getBackground().setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY));
+                                        } else {
+                                            ((CombinedDrawable) drawable).getIcon().setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY));
+                                        }
+                                    } else {
+                                        imageView.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY));
+                                    }
                                 } else if (object instanceof BackupImageView) {
                                     Drawable drawable = ((BackupImageView) object).getImageReceiver().getStaticThumb();
                                     if (drawable instanceof CombinedDrawable) {
@@ -689,6 +701,7 @@ public class ThemeDescription {
                                     ((RadialProgressView) object).setProgressColor(color);
                                 } else if (object instanceof Paint) {
                                     ((Paint) object).setColor(color);
+                                    child.invalidate();
                                 } else if (object instanceof SeekBarView) {
                                     if ((changeFlags & FLAG_PROGRESSBAR) != 0) {
                                         ((SeekBarView) object).setOuterColor(color);

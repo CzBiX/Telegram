@@ -22,7 +22,7 @@ dependencies {
     compileOnly 'org.checkerframework:checker-qual:2.5.2'
     compileOnly 'org.checkerframework:checker-compat-qual:2.5.0'
     implementation 'com.google.firebase:firebase-messaging:20.1.0'
-    implementation 'com.google.firebase:firebase-config:19.1.0'
+    implementation 'com.google.firebase:firebase-config:19.1.1'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
     implementation 'com.google.android.gms:play-services-vision:16.2.0'
@@ -267,12 +267,12 @@ android {
                 manifest.srcFile 'config/release/AndroidManifest_SDK23.xml'
             }
             ext {
-                abiVersionCode = 0
+                abiVersionCode = 9
             }
         }
     }
 
-    defaultConfig.versionCode = 1828
+    defaultConfig.versionCode = 1867
 
     applicationVariants.all { variant ->
         variant.outputs.all { output ->
@@ -307,7 +307,7 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 28
-        versionName "5.13.1"
+        versionName "5.15.0"
 
         multiDexEnabled true
         vectorDrawables.generatedDensities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi']

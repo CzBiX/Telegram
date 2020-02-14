@@ -12,6 +12,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -54,6 +55,8 @@ public class PhotoViewerCaptionEnterView extends FrameLayout implements Notifica
     private ImageView emojiButton;
     private EmojiView emojiView;
     private SizeNotifierFrameLayoutPhoto sizeNotifierLayout;
+    private Drawable drawable;
+    private Drawable checkDrawable;
 
     private AnimatorSet runningAnimation;
     private AnimatorSet runningAnimation2;
@@ -149,6 +152,12 @@ public class PhotoViewerCaptionEnterView extends FrameLayout implements Notifica
             protected int getActionModeStyle() {
                 return FloatingToolbar.STYLE_BLACK;
             }
+
+            @Override
+            public boolean requestRectangleOnScreen(Rect rectangle) {
+                rectangle.bottom += AndroidUtilities.dp(1000);
+                return super.requestRectangleOnScreen(rectangle);
+            }
         };
 
         messageEditText.setWindowView(windowView);
@@ -233,8 +242,8 @@ public class PhotoViewerCaptionEnterView extends FrameLayout implements Notifica
             }
         });
 
-        Drawable drawable = Theme.createCircleDrawable(AndroidUtilities.dp(16), 0xff66bffa);
-        Drawable checkDrawable = context.getResources().getDrawable(R.drawable.input_done).mutate();
+        drawable = Theme.createCircleDrawable(AndroidUtilities.dp(16), 0xff66bffa);
+        checkDrawable = context.getResources().getDrawable(R.drawable.input_done).mutate();
         CombinedDrawable combinedDrawable = new CombinedDrawable(drawable, checkDrawable, 0, AndroidUtilities.dp(1));
         combinedDrawable.setCustomSize(AndroidUtilities.dp(32), AndroidUtilities.dp(32));
 
@@ -270,6 +279,11 @@ public class PhotoViewerCaptionEnterView extends FrameLayout implements Notifica
 
     public void setForceFloatingEmoji(boolean value) {
         forceFloatingEmoji = value;
+    }
+
+    public void updateColors() {
+        Theme.setDrawableColor(drawable, Theme.getColor(Theme.key_dialogFloatingButton));
+        Theme.setDrawableColor(checkDrawable, Theme.getColor(Theme.key_dialogFloatingIcon));
     }
 
     public boolean hideActionMode() {

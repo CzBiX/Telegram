@@ -8,8 +8,6 @@ import android.view.View;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.exoplayer2.util.Log;
-
 import org.telegram.ui.Cells.ChatMessageCell;
 
 import java.util.ArrayList;
@@ -24,11 +22,11 @@ public class RecyclerAnimationScrollHelper {
     private LinearLayoutManager layoutManager;
 
     private int scrollDirection;
-    ValueAnimator animator;
+    private ValueAnimator animator;
 
-    ScrollListener scrollListener;
+    private ScrollListener scrollListener;
 
-    AnimationCallback animationCallback;
+    private AnimationCallback animationCallback;
 
     public RecyclerAnimationScrollHelper(RecyclerListView recyclerView, LinearLayoutManager layoutManager) {
         this.recyclerView = recyclerView;
@@ -177,11 +175,13 @@ public class RecyclerAnimationScrollHelper {
                             }
                             child.setTranslationY(0);
                         }
-                        if (animationCallback != null) {
-                            animationCallback.onEndAnimation();
-                        }
+
                         if (finalAnimatableAdapter != null) {
                             finalAnimatableAdapter.onAnimationEnd();
+                        }
+
+                        if (animationCallback != null) {
+                            animationCallback.onEndAnimation();
                         }
 
                         animator = null;
@@ -264,7 +264,7 @@ public class RecyclerAnimationScrollHelper {
             if (!animationRunning) {
                 super.notifyDataSetChanged();
             } else {
-                shouldNotifyDataSetChanged = false;
+                shouldNotifyDataSetChanged = true;
             }
         }
 
@@ -297,20 +297,8 @@ public class RecyclerAnimationScrollHelper {
 
         public void onAnimationEnd() {
             animationRunning = false;
-            if (shouldNotifyDataSetChanged) {
+            if (shouldNotifyDataSetChanged || !rangeInserted.isEmpty() || !rangeRemoved.isEmpty()) {
                 notifyDataSetChanged();
-            } else {
-                if (!rangeInserted.isEmpty()) {
-                    for (int i = 0; i < rangeInserted.size(); i += 2) {
-                        notifyItemRangeInserted(rangeInserted.get(i), rangeInserted.get(i + 1));
-                    }
-                }
-
-                if (!rangeRemoved.isEmpty()) {
-                    for (int i = 0; i < rangeRemoved.size(); i += 2) {
-                        notifyItemRangeRemoved(rangeRemoved.get(i), rangeRemoved.get(i + 1));
-                    }
-                }
             }
         }
     }
