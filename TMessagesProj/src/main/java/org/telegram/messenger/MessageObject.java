@@ -118,6 +118,8 @@ public class MessageObject {
     public boolean isRestrictedMessage;
     public long loadedFileSize;
 
+    public boolean wasUnread;
+
     public boolean hadAnimationNotReadyLoading;
 
     public boolean cancelEditing;
@@ -358,7 +360,7 @@ public class MessageObject {
         private int maxSizeWidth = 800;
         private int firstSpanAdditionalSize = 200;
 
-        private class MessageGroupedLayoutAttempt {
+        private static class MessageGroupedLayoutAttempt {
 
             public int[] lineCounts;
             public float[] heights;
@@ -799,6 +801,7 @@ public class MessageObject {
         messageOwner = message;
         replyMessageObject = replyToMessage;
         eventId = eid;
+        wasUnread = !messageOwner.out && messageOwner.unread;
 
         if (message.replyMessage != null) {
             replyMessageObject = new MessageObject(currentAccount, message.replyMessage, null, users, chats, sUsers, sChats, false, eid);
@@ -2449,7 +2452,9 @@ public class MessageObject {
                 messageText = restrictionReason;
                 isRestrictedMessage = true;
             } else if (!isMediaEmpty()) {
-                if (messageOwner.media instanceof TLRPC.TL_messageMediaPoll) {
+                if (messageOwner.media instanceof TLRPC.TL_messageMediaDice) {
+                    messageText = "\uD83C\uDFB2";
+                } else if (messageOwner.media instanceof TLRPC.TL_messageMediaPoll) {
                     if (((TLRPC.TL_messageMediaPoll) messageOwner.media).poll.quiz) {
                         messageText = LocaleController.getString("QuizPoll", R.string.QuizPoll);
                     } else {
@@ -2537,6 +2542,19 @@ public class MessageObject {
             } else if (messageOwner.media.ttl_seconds != 0 && (messageOwner.media.photo instanceof TLRPC.TL_photoEmpty || getDocument() instanceof TLRPC.TL_documentEmpty)) {
                 contentType = 1;
                 type = 10;
+            } else if (messageOwner.media instanceof TLRPC.TL_messageMediaDice) {
+                type = TYPE_ANIMATED_STICKER;
+                if (messageOwner.media.document == null) {
+                    messageOwner.media.document = new TLRPC.TL_document();
+                    messageOwner.media.document.file_reference = new byte[0];
+                    messageOwner.media.document.mime_type = "application/x-tgsdice";
+                    messageOwner.media.document.dc_id = Integer.MIN_VALUE;
+                    messageOwner.media.document.id = Integer.MIN_VALUE;
+                    TLRPC.TL_documentAttributeImageSize attributeImageSize = new TLRPC.TL_documentAttributeImageSize();
+                    attributeImageSize.w = 512;
+                    attributeImageSize.h = 512;
+                    messageOwner.media.document.attributes.add(attributeImageSize);
+                }
             } else if (messageOwner.media instanceof TLRPC.TL_messageMediaPhoto) {
                 type = TYPE_PHOTO;
             } else if (messageOwner.media instanceof TLRPC.TL_messageMediaGeo || messageOwner.media instanceof TLRPC.TL_messageMediaVenue || messageOwner.media instanceof TLRPC.TL_messageMediaGeoLive) {
@@ -4253,7 +4271,7 @@ public class MessageObject {
     }
 
     public static boolean isAnimatedStickerDocument(TLRPC.Document document, boolean allowWithoutSet) {
-        if (document != null && "application/x-tgsticker".equals(document.mime_type) && !document.thumbs.isEmpty()) {
+        if (document != null && ("application/x-tgsticker".equals(document.mime_type) && !document.thumbs.isEmpty() || "application/x-tgsdice".equals(document.mime_type))) {
             if (allowWithoutSet) {
                 return true;
             }
@@ -4622,6 +4640,17 @@ public class MessageObject {
         return emojiAnimatedSticker != null;
     }
 
+    public boolean isDice() {
+        return messageOwner.media instanceof TLRPC.TL_messageMediaDice;
+    }
+
+    public int getDiceValue() {
+        if (messageOwner.media instanceof TLRPC.TL_messageMediaDice) {
+            return ((TLRPC.TL_messageMediaDice) messageOwner.media).value;
+        }
+        return -1;
+    }
+
     public boolean isSticker() {
         if (type != 1000) {
             return type == TYPE_STICKER;
@@ -4704,7 +4733,7 @@ public class MessageObject {
     }
 
     public boolean isNewGif() {
-        return messageOwner.media != null && isNewGifDocument(messageOwner.media.document);
+        return messageOwner.media != null && isNewGifDocument(getDocument());
     }
 
     public boolean isAndroidTheme() {
@@ -4740,7 +4769,7 @@ public class MessageObject {
                         if (!unknown) {
                             return null;
                         }
-                        return LocaleController.formatDateAudio(messageOwner.date);
+                        return LocaleController.formatDateAudio(messageOwner.date, true);
                     }
                     String title = attribute.title;
                     if (title == null || title.length() == 0) {
@@ -4752,7 +4781,7 @@ public class MessageObject {
                     return title;
                 } else if (attribute instanceof TLRPC.TL_documentAttributeVideo) {
                     if (attribute.round_message) {
-                        return LocaleController.formatDateAudio(messageOwner.date);
+                        return LocaleController.formatDateAudio(messageOwner.date, true);
                     }
                 }
             }
